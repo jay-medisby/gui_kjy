@@ -7,11 +7,13 @@ import '../theme/dimensions.dart';
 class SidebarMenu extends StatelessWidget {
   final MenuType currentMenu;
   final ValueChanged<MenuType> onMenuTap;
+  final VoidCallback? onHomeTap;
 
   const SidebarMenu({
     super.key,
     required this.currentMenu,
     required this.onMenuTap,
+    this.onHomeTap,
   });
 
   // Figma: 메인 메뉴 3개 (시작, 환자, 치료기록)
@@ -63,7 +65,9 @@ class SidebarMenu extends StatelessWidget {
 
   /// 홈 버튼 + MEDISBY 로고
   Widget _buildHomeHeader() {
-    return Row(
+    return GestureDetector(
+      onTap: onHomeTap,
+      child: Row(
       children: [
         // Figma: btn_home 76×76, 원형, 흰색 border 2px
         Container(
@@ -104,6 +108,7 @@ class SidebarMenu extends StatelessWidget {
           ],
         ),
       ],
+    ),
     );
   }
 

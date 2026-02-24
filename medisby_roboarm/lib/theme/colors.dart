@@ -44,4 +44,14 @@ class AppColors {
   static const Color borderDark = Color(0x4D000000); // rgba(0,0,0,0.3)
   static const Color borderGray = Color(0x808899A6); // rgba(136,153,166,0.5)
   static const Color borderGreen = Color(0xFF10B981);
+
+  // ── Settings Modal ──
+  static const Color settingsCardBg = Color(0xFF262626); // 다크 모달 카드 배경
+  static const Color settingsCardBorder = Color(0xFF404040); // 카드 내 row 테두리
+
+  // ── Stop Flow ──
+  static const Color emergencyBg = Color(0xFF2B0E0E); // 비상정지 모달 배경
+  static const Color emergencyAccent = Color(0xFFFF0000); // 비상정지 강조색
+  static const Color safeBg = Color(0xFF3B3B10); // 보호정지 모달 배경
+  static const Color safeAccent = Color(0xFFCCB800); // 보호정지 강조색
 }

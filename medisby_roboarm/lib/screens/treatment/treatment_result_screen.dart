@@ -1,0 +1,397 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../theme/colors.dart';
+import '../../theme/text_styles.dart';
+import '../../widgets/content_card.dart';
+import '../../widgets/circular_progress.dart';
+import '../../widgets/long_press_move_button.dart';
+import '../../widgets/warning_box.dart';
+import '../../widgets/modal_overlay.dart';
+import '../../widgets/app_button.dart';
+
+/// 치료 결과 → 구동장착부 탈착 → 착용 해제 → 홈 위치 이동 → 완료
+enum _EndPage {
+  result,          // 치료 결과 (56)
+  separateArm,     // 장비의 암과 구동장착부 탈착 (54)
+  separateWear,    // 구동장착부 착용 해제 (55)
+  homeMove,        // 홈 위치 이동 (57-58)
+}
+
+class TreatmentResultScreen extends StatefulWidget {
+  const TreatmentResultScreen({super.key});
+
+  @override
+  State<TreatmentResultScreen> createState() => _TreatmentResultScreenState();
+}
+
+class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
+  _EndPage _page = _EndPage.result;
+  bool _isMoving = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(31, 123, 35, 19),
+      child: ContentCard(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+        child: switch (_page) {
+          _EndPage.result => _buildResult(),
+          _EndPage.separateArm => _buildSeparateArm(),
+          _EndPage.separateWear => _buildSeparateWear(),
+          _EndPage.homeMove => _buildHomeMove(),
+        },
+      ),
+    );
+  }
+
+  // ──────────────────────────────────────────
+  // 치료 결과
+  // ──────────────────────────────────────────
+
+  Widget _buildResult() {
+    return Column(
+      children: [
+        const SizedBox(height: 8),
+        Text(
+          '치료 결과',
+          style:
+              AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 평균 속도
+              _resultCard(
+                '평균 속도',
+                const CircularProgress(
+                  value: 0.6,
+                  size: 160,
+                  activeColor: Color(0xFF002060),
+                  hidePercent: true,
+                ),
+                '6',
+              ),
+              const SizedBox(width: 16),
+              // 치료 시간
+              _resultCard(
+                '치료 시간',
+                const CircularProgress(
+                  value: 1.0,
+                  size: 160,
+                  activeColor: Color(0xFF002060),
+                  hidePercent: true,
+                ),
+                '00:30:30',
+              ),
+              const SizedBox(width: 16),
+              // 평균 부하도
+              _resultCard(
+                '평균 부하도',
+                const CircularProgress(
+                  value: 0.5,
+                  size: 160,
+                  activeColor: Color(0xFF002060),
+                  hidePercent: true,
+                ),
+                '5',
+              ),
+            ],
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: GestureDetector(
+            onTap: () => setState(() => _page = _EndPage.separateArm),
+            child: Container(
+              width: 380,
+              height: 55,
+              decoration: BoxDecoration(
+                color: AppColors.green,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              alignment: Alignment.center,
+              child: Text('종료',
+                  style: AppTextStyles.bodyLarge
+                      .copyWith(color: AppColors.textWhite)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _resultCard(String title, Widget progress, String valueText) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFFE0E0E0)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(title,
+                style: AppTextStyles.titleLarge
+                    .copyWith(color: AppColors.textBlack)),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: 160,
+              height: 160,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  progress,
+                  Text(
+                    valueText,
+                    style: AppTextStyles.headingLarge.copyWith(
+                      color: AppColors.textBlack,
+                      fontSize: 36,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ──────────────────────────────────────────
+  // 구동장착부 탈착 (암 분리)
+  // ──────────────────────────────────────────
+
+  Widget _buildSeparateArm() {
+    return Column(
+      children: [
+        const SizedBox(height: 8),
+        Text(
+          '장비의 암과 상지 구동장착부 탈착',
+          style:
+              AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '장비의 암에 체결된 상지 구동장착부를 탈착해 주세요',
+          style:
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8E8E8),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text('분리 이미지',
+                      style: AppTextStyles.bodyLarge
+                          .copyWith(color: AppColors.grayHighlight)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              _videoButton('탈착 동영상'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Align(
+          alignment: Alignment.centerRight,
+          child: _greenButton('탈착 완료 →',
+              () => setState(() => _page = _EndPage.separateWear)),
+        ),
+      ],
+    );
+  }
+
+  // ──────────────────────────────────────────
+  // 구동장착부 착용 해제
+  // ──────────────────────────────────────────
+
+  Widget _buildSeparateWear() {
+    return Column(
+      children: [
+        const SizedBox(height: 8),
+        Text(
+          '상지 구동장착부 착용 해제',
+          style:
+              AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '환자분으로부터 상지 구동장착부 착용을 해제해 주세요',
+          style:
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8E8E8),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text('분리 이미지',
+                      style: AppTextStyles.bodyLarge
+                          .copyWith(color: AppColors.grayHighlight)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              _videoButton('해제 동영상'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Align(
+          alignment: Alignment.centerRight,
+          child: _greenButton('해제 완료 →',
+              () => setState(() => _page = _EndPage.homeMove)),
+        ),
+      ],
+    );
+  }
+
+  // ──────────────────────────────────────────
+  // 홈 위치 이동
+  // ──────────────────────────────────────────
+
+  Widget _buildHomeMove() {
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        Text(
+          '홈 위치 이동',
+          style:
+              AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          '버튼을 누른 상태를 유지하여 암을 홈 위치로 이동시켜 주세요.',
+          style: AppTextStyles.titleMedium
+              .copyWith(color: AppColors.textBlack),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 20),
+        const WarningBox(
+          text: '이동 시 주변에 사람이나 장애물이 없는지 확인해 주세요.\n'
+              '장비의 암 주변에 장애물이 있으면 장애물을 옮기거나 장비를 이동시켜 주세요.',
+          boxed: true,
+        ),
+        const Spacer(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 100),
+          child: LongPressMoveButton(
+            isMoving: _isMoving,
+            onLongPress: () {
+              setState(() => _isMoving = true);
+              _simulateHomeMovement();
+            },
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '버튼에서 손을 떼면 이동이 중단됩니다',
+          style: AppTextStyles.captionLight
+              .copyWith(color: AppColors.textBlack),
+        ),
+        const Spacer(),
+      ],
+    );
+  }
+
+  void _simulateHomeMovement() {
+    Future.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      _showMoveCompleteDialog();
+    });
+  }
+
+  void _showMoveCompleteDialog() {
+    showDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      barrierDismissible: false,
+      builder: (ctx) => ModalOverlay(
+        dismissible: false,
+        barrierColor: AppColors.modalOverlayDark,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '장비의 암이 홈 위치로 이동을 완료하였습니다',
+              style: AppTextStyles.headingLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            AppButton(
+              label: '확인',
+              variant: ButtonVariant.green,
+              size: ButtonSize.medium,
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                context.go('/');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ════════════════════════════════════════════
+  // Shared helpers
+  // ════════════════════════════════════════════
+
+  Widget _greenButton(String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 380,
+        height: 55,
+        decoration: BoxDecoration(
+          color: AppColors.green,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        alignment: Alignment.center,
+        child: Text(label,
+            style:
+                AppTextStyles.bodyLarge.copyWith(color: AppColors.textWhite)),
+      ),
+    );
+  }
+
+  Widget _videoButton(String label) {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: 80,
+        height: 80,
+        decoration: BoxDecoration(
+          color: AppColors.cardWhite,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.green, width: 1.5),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.videocam, color: AppColors.green, size: 28),
+            const SizedBox(height: 4),
+            Text(label,
+                style: AppTextStyles.captionLight.copyWith(
+                    color: AppColors.green, fontSize: 11),
+                textAlign: TextAlign.center),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -22,6 +22,9 @@ class AppScaffold extends StatelessWidget {
   /// 장비 상태 (우상단 배지)
   final DeviceStatus deviceStatus;
 
+  /// 홈 아이콘 탭 콜백
+  final VoidCallback? onHomeTap;
+
   const AppScaffold({
     super.key,
     required this.child,
@@ -29,6 +32,7 @@ class AppScaffold extends StatelessWidget {
     required this.onMenuTap,
     this.isConnected = true,
     this.deviceStatus = DeviceStatus.ready,
+    this.onHomeTap,
   });
 
   @override
@@ -51,6 +55,7 @@ class AppScaffold extends StatelessWidget {
                       SidebarMenu(
                         currentMenu: currentMenu,
                         onMenuTap: onMenuTap,
+                        onHomeTap: onHomeTap,
                       ),
 
                       // 우측: 상태 배지 + 메인 콘텐츠

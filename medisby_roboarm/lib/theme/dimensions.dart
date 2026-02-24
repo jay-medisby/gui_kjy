@@ -59,4 +59,9 @@ class AppDimensions {
   static const double strokeThin = 1;
   static const double strokeMedium = 2;
   static const double strokeThick = 3;
+
+  // ── Settings Modal ──
+  static const double settingsRowHeight = 80;
+  static const double jointButtonSize = 70;
+  static const double numpadButtonSize = 70;
 }

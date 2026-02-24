@@ -12,7 +12,36 @@
 - Figma MCP 연동 완료 — 디자인 토큰 및 노드 데이터 직접 조회 가능
 - MCP 도구: get_design_context, get_screenshot, get_variable_defs, get_metadata 활용
 
-### 섹션 노드 ID 매핑표
+### ⚠️ 디자인 참조 우선순위
+1. **로컬 스크린샷 우선** — `../screenshot/` 폴더의 PNG 파일을 Read 도구로 직접 열어서 확인
+2. **Figma API는 보조** — 로컬 스크린샷으로 충분하지 않을 때만 사용 (rate limit 주의)
+3. 파일명 패턴: `{번호}_{섹션}_{상태}.png` — 번호가 섹션을 구분
+
+### 스크린샷 폴더 (../screenshot/)
+
+| 섹션 | 번호 범위 | 파일 수 | 파일 접두사 패턴 |
+|------|----------|--------|----------------|
+| Home | 01 | 5 | `01_home_*` |
+| Settings | 03~05, 10~11 | 7 | `03_setting`, `04_setting_reset`, `05_setting_reset_yes`, `10_setting_reset_*`, `11_setting_systeminfo` |
+| Admin | 12~24 | 20 | `12_setting_adminaccess*`, `13_setting_admin`, `14~15_*usermanagement*`, `16~19_*romtest*`, `20~24_*veltest*` |
+| Pre-treatment | 30~43 | 36 | `30_start_pre_step1*` ~ `43_start_pre_step14` |
+| Treatment | 44~59 | 19 | `44_start_treat` ~ `59_start_treat_end_3` |
+| Exit | 62~64 | 5 | `62_exit*`, `63_exit_moving*`, `64_exit_done` |
+| Emergency Stop | 70~75 | 6 | `70_emergency_stop_step1` ~ `75_emergency_stop_step4` |
+| Safe Stop | 80~85 | 6 | `80_safe_stop_step1` ~ `85_safe_stop_step4` |
+| Go-Home | 90~94 | 5 | `90` ~ `94` (접두사 없음) |
+
+#### 사용법
+```
+# 특정 섹션 구현 전 — 해당 스크린샷들을 Read 도구로 열어 디자인 확인
+Read ../screenshot/01_home_ready.png
+Read ../screenshot/01_home_reset_1.png
+# Glob으로 섹션 파일 일괄 검색
+Glob ../screenshot/01_home_*.png
+Glob ../screenshot/30_start_pre_*.png
+```
+
+### 섹션 노드 ID 매핑표 (Figma API용)
 
 | 섹션 | 노드 ID | 화면 수 | 설명 |
 |------|---------|--------|------|
@@ -145,14 +174,32 @@ assets/
 | gauge_meter.dart | GaugeMeter | CustomPainter 반원형 부하도, 3구간 색상+니들 |
 | circular_progress.dart | CircularProgress | CustomPainter 원형 링, 중앙 % 표시 |
 | trajectory_progress_bar.dart | TrajectoryProgressBar | 궤적 바, 초록/파랑 영역+마커+라벨 |
+| settings_modal_base.dart | SettingsModalBase | 다크 모달 컨테이너 970×544, 타이틀/브레드크럼/뒤로/닫기 |
+| joint_selector.dart | JointSelector | J1~J6 관절 선택 그리드 (ROM/속도 테스트) |
+| long_press_move_button.dart | LongPressMoveButton | 롱프레스 이동 버튼 (Home/Reset 공통) |
+| warning_box.dart | WarningBox | 오렌지 경고 텍스트 (boxed/inline) |
+
+### 화면 목록 (lib/screens/)
+| 경로 | 위젯 | 설명 |
+|------|------|------|
+| home/home_screen.dart | HomeScreen | 상태별 분기(initializing/armNotHome/moving/ready) |
+| settings/settings_flow.dart | SettingsFlow | 18페이지 상태머신 모달 (설정+초기화+시스템정보+관리자+ROM/속도테스트+사용자관리) |
+| pre_treatment/pre_treatment_flow.dart | PreTreatmentFlow | 12단계 위저드 (환자군→부위→암이동→정렬→바퀴→착용→체결→시작자세→궤적→확인→파라미터→핸드스위치) |
+| treatment/treatment_dashboard.dart | TreatmentDashboard | 치료 대시보드 (속도/부하도/남은시간 + 궤적바 + 일시정지/종료/궤적추가 모달) |
+| treatment/trajectory_add_flow.dart | TrajectoryAddFlow | 궤적 추가 3단계 (끝으로이동→새궤적입력→확인) |
+| treatment/treatment_result_screen.dart | TreatmentResultScreen | 치료결과 + 구동장착부탈착 + 착용해제 + 홈위치이동 4단계 |
+| exit/exit_flow.dart | ExitFlow | 종료 모달 4단계 (확인→탈착→홈이동→완료) — showDialog 패턴 |
+| emergency/stop_flow.dart | StopFlow | 비상정지/보호정지 통합 4단계 (StopType.emergency/safe) — 전역 Overlay |
+| home/go_home_flow.dart | GoHomeFlow | 홈 복귀 모달 4단계 (확인→탈착→이동→완료) — 치료 중 홈 아이콘 탭 시 |
 
 ### 모델 목록 (lib/models/)
 | 파일 | 설명 |
 |------|------|
-| body_part.dart | `enum BodyPart { upper, lower }` — 상지/하지 분기 |
+| body_part.dart | `enum BodyPart { upper, lower }` + `enum BodyPartSelection { rightUpper, leftUpper, rightLower, leftLower }` — 상지/하지/좌/우 분기 |
 | menu_type.dart | `enum MenuType { start, patient, treatmentLog, settings, exit }` — 사이드바 메뉴 |
 
 ### Figma MCP 조회 시 주의사항
+- **로컬 스크린샷(`../screenshot/`)을 먼저 확인** — Figma API 호출 전에 항상 로컬 파일 우선 사용
 - depth=3이면 카드 내부 벡터(게이지/프로그레스 도형)가 안 보임 → depth=5~6 필요
 - Figma API rate limit (429) 발생 시 30초~1분 대기 후 재시도
 - JSON이 단일 라인으로 저장되어 grep이 안 됨 → python 파싱 또는 에이전트 위임
@@ -160,10 +207,10 @@ assets/
 ## 현재 진행 상태
 - [x] Phase 0: 프로젝트 초기화 + 디자인 시스템
 - [x] Phase 1: 공통 위젯 구현
-- [ ] Phase 2: Home 섹션
-- [ ] Phase 3: Settings 섹션 (Admin 포함)
-- [ ] Phase 4: Pre-treatment 섹션
-- [ ] Phase 5: Treatment 섹션
-- [ ] Phase 6: Exit + Stop 섹션
-- [ ] Phase 7: Go-Home(Popups) + 폴리싱
+- [x] Phase 2: Home 섹션
+- [x] Phase 3: Settings 섹션 (Admin 포함)
+- [x] Phase 4: Pre-treatment 섹션
+- [x] Phase 5: Treatment 섹션
+- [x] Phase 6: Exit + Stop 섹션
+- [x] Phase 7: Go-Home(Popups) + 폴리싱
 - [ ] Phase 8: 상태 관리 & 통합

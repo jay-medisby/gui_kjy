@@ -16,6 +16,9 @@ class CircularProgress extends StatelessWidget {
   final double strokeWidth;
   final String? centerLabel;
 
+  /// true이면 퍼센트(%) 텍스트를 숨기고 centerLabel만 표시
+  final bool hidePercent;
+
   const CircularProgress({
     super.key,
     required this.value,
@@ -24,6 +27,7 @@ class CircularProgress extends StatelessWidget {
     this.trackColor,
     this.strokeWidth = 16,
     this.centerLabel,
+    this.hidePercent = false,
   });
 
   @override
@@ -44,16 +48,17 @@ class CircularProgress extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                '${(value * 100).toInt()}%',
-                style: AppTextStyles.headingLarge.copyWith(
-                  color: color,
-                  fontSize: size * 0.2,
+              if (!hidePercent)
+                Text(
+                  '${(value * 100).toInt()}%',
+                  style: AppTextStyles.headingLarge.copyWith(
+                    color: color,
+                    fontSize: size * 0.2,
+                  ),
                 ),
-              ),
               if (centerLabel != null)
                 Padding(
-                  padding: const EdgeInsets.only(top: 4),
+                  padding: EdgeInsets.only(top: hidePercent ? 0 : 4),
                   child: Text(
                     centerLabel!,
                     style: AppTextStyles.captionLight.copyWith(

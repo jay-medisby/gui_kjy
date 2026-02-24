@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(head:*)",
+      "Bash(sleep 35 && curl -s -H \"X-Figma-Token: figd_ibDkxB5pw9Ga-Ll5fOXvEWblqadcIflDMvJipJY3\" \"https://api.figma.com/v1/files/8pB0iV0zAVNG5Sw5XcwznC/nodes?ids=329:13651&depth=2\" 2>/dev/null | python -m json.tool 2>/dev/null)",
+      "Bash(sleep 60 && curl -s -H \"X-Figma-Token: figd_ibDkxB5pw9Ga-Ll5fOXvEWblqadcIflDMvJipJY3\" \"https://api.figma.com/v1/files/8pB0iV0zAVNG5Sw5XcwznC/nodes?ids=329:13651&depth=1\" 2>/dev/null | python -m json.tool 2>/dev/null)",
+      "Bash(sleep 90 && curl -s -H \"X-Figma-Token: figd_ibDkxB5pw9Ga-Ll5fOXvEWblqadcIflDMvJipJY3\" \"https://api.figma.com/v1/files/8pB0iV0zAVNG5Sw5XcwznC/nodes?ids=329:13651&depth=1\" 2>/dev/null | python -m json.tool 2>/dev/null)",
+      "Bash(python:*)",
+      "Bash(cd \"D:/__Medisby/gui_kjy/medisby_roboarm\" && flutter analyze lib/screens/home/home_screen.dart 2>&1)",
+      "Bash(tail:*)",
+      "Bash(cd \"D:/__Medisby/gui_kjy/medisby_roboarm\" && flutter analyze 2>&1)",
+      "Bash(cd \"D:/__Medisby/gui_kjy/medisby_roboarm\" && dart analyze lib/ 2>&1)",
+      "Bash(cd \"D:/__Medisby/gui_kjy/medisby_roboarm\" && dart analyze lib/screens/home/home_screen.dart 2>&1)",
+      "Bash(cd D:/__Medisby/gui_kjy/medisby_roboarm && dart analyze lib/ 2>&1)",
+      "Bash(cd D://__Medisby/gui_kjy/medisby_roboarm && dart analyze lib/ 2>&1)",
+      "Bash(grep:*)",
+      "Bash(flutter:*)"
+    ]
+  }
+}
