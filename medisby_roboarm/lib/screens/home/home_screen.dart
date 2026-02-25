@@ -3,8 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/colors.dart';
 import '../../theme/text_styles.dart';
 import '../../widgets/content_card.dart';
-import '../../widgets/app_button.dart';
-import '../../widgets/modal_overlay.dart';
+import '../../widgets/confirm_dialog.dart';
 import '../../widgets/long_press_move_button.dart';
 import '../../widgets/warning_box.dart';
 
@@ -44,12 +43,12 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // ── Left: Robot image ──
             SizedBox(
-              width: 340,
+              width: 450,
               child: Center(
                 child: Image.asset(
-                  _isMovingImage
-                      ? 'assets/images/img_roboarm_moving.png'
-                      : 'assets/images/img_roboarm.png',
+                  'assets/images/img_roboarm.png',
+                  width: 450,
+                  height: 450,
                   fit: BoxFit.contain,
                   errorBuilder: (_, _, _) => _imagePlaceholder(),
                 ),
@@ -73,9 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  bool get _isMovingImage =>
-      _status == HomeStatus.armNotHome || _status == HomeStatus.moving;
 
   // ── Brand Header: MEDISBY / ROBOARM ──
 
@@ -236,38 +232,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Screen 4 — 이동 완료 모달
-  /// Figma: 다크 오버레이 + 흰색 텍스트 + 초록 확인 버튼
   void _showMoveCompleteDialog() {
     showDialog(
       context: context,
       barrierColor: Colors.transparent,
       barrierDismissible: false,
-      builder: (dialogContext) => ModalOverlay(
-        dismissible: false,
-        barrierColor: AppColors.modalOverlayDark,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
-                '장비의 암이 홈 위치로 이동을 완료하였습니다',
-                style: AppTextStyles.headingLarge,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 32),
-            AppButton(
-              label: '확인',
-              variant: ButtonVariant.green,
-              size: ButtonSize.medium,
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                setState(() => _status = HomeStatus.ready);
-              },
-            ),
-          ],
-        ),
+      builder: (dialogContext) => ConfirmDialog(
+        title: '장비의 암이 홈 위치로\n이동을 완료하였습니다',
+        confirmLabel: '확인',
+        onConfirm: () {
+          Navigator.of(dialogContext).pop();
+          setState(() => _status = HomeStatus.ready);
+        },
       ),
     );
   }

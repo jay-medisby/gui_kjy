@@ -6,8 +6,9 @@ import '../../theme/dimensions.dart';
 import '../../theme/text_styles.dart';
 import '../../widgets/content_card.dart';
 import '../../widgets/step_indicator.dart';
-import '../../widgets/app_button.dart';
-import '../../widgets/modal_overlay.dart';
+import '../../widgets/confirm_dialog.dart';
+import '../../widgets/long_press_move_button.dart';
+import '../../widgets/warning_box.dart';
 import '../../widgets/trajectory_progress_bar.dart';
 
 /// 환자군 (3종)
@@ -49,11 +50,11 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(31, 123, 35, 19),
       child: ContentCard(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
         child: Column(
           children: [
             _buildStepHeader(),
-            const SizedBox(height: 4),
+            const SizedBox(height: 16),
             Expanded(child: _buildStepContent()),
             const SizedBox(height: 8),
             _buildNavButtons(),
@@ -66,29 +67,33 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
   // ── Header: "N / 12단계" + StepIndicator dots ──
 
   Widget _buildStepHeader() {
-    return Row(
+    return Stack(
+      alignment: Alignment.center,
       children: [
-        RichText(
-          text: TextSpan(children: [
-            TextSpan(
-              text: '${_currentStep + 1}',
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.green),
-            ),
-            TextSpan(
-              text: ' / $_totalSteps단계',
-              style: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.textBlack),
-            ),
-          ]),
+        Center(
+          child: StepIndicator(
+            currentStep: _currentStep,
+            totalSteps: _totalSteps,
+            dotSize: 16,
+            gap: 10,
+          ),
         ),
-        const Spacer(),
-        StepIndicator(
-          currentStep: _currentStep,
-          totalSteps: _totalSteps,
-          dotSize: 16,
-          gap: 10,
+        Positioned(
+          left: 0,
+          child: RichText(
+            text: TextSpan(children: [
+              TextSpan(
+                text: '${_currentStep + 1}',
+                style: AppTextStyles.bodyLarge.copyWith(color: AppColors.green),
+              ),
+              TextSpan(
+                text: ' / $_totalSteps단계',
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.textBlack),
+              ),
+            ]),
+          ),
         ),
-        const Spacer(),
       ],
     );
   }
@@ -96,9 +101,6 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
   // ── Navigation buttons ──
 
   Widget _buildNavButtons() {
-    // Step 3: no next button (move button replaces it)
-    final showNext = _currentStep != 2;
-
     String prevLabel = '← 이전';
     String nextLabel = '다음 →';
 
@@ -110,27 +112,36 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
     if (_currentStep == _totalSteps - 1) nextLabel = '치료 시작 →';
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         // Prev
         Expanded(
           child: Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.bottomLeft,
             child: _navButton(prevLabel, _goBack),
           ),
         ),
-        // Next
-        if (showNext)
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: _navButton(
-                nextLabel,
-                _canGoNext ? _goNext : null,
-              ),
-            ),
-          )
-        else
-          const Expanded(child: SizedBox()),
+        // Next (or move button for step 3)
+        Expanded(
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: _currentStep == 2
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        '버튼에서 손을 떼면 이동이 중단됩니다',
+                        style: AppTextStyles.captionLight
+                            .copyWith(color: AppColors.textBlack),
+                      ),
+                      const SizedBox(height: 6),
+                      _buildMoveButton(),
+                    ],
+                  )
+                : _navButton(nextLabel, _canGoNext ? _goNext : null),
+          ),
+        ),
       ],
     );
   }
@@ -218,10 +229,9 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
 
   Widget _buildStep1PatientGroup() {
     const groups = [
-      (PatientGroup.low, '저부하', '(골다공증, 뇌졸증, 소아)', Icons.elderly),
-      (PatientGroup.medium, '중부하', '(동결견, 수술 후 기능회복)',
-          Icons.accessibility_new),
-      (PatientGroup.high, '고부하', '(근력 강화)', Icons.fitness_center),
+      (PatientGroup.low, '저부하', '(골다공증, 뇌졸증, 소아)', 'assets/images/img_group1.png'),
+      (PatientGroup.medium, '중부하', '(동결견, 수술 후 기능회복)', 'assets/images/img_group2.png'),
+      (PatientGroup.high, '고부하', '(근력 강화)', 'assets/images/img_group3.png'),
     ];
 
     return Column(
@@ -256,7 +266,10 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _imagePlaceholder(160, 150, g.$4),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                          child: Image.asset(g.$4, width: 160, height: 150, fit: BoxFit.contain),
+                        ),
                         const SizedBox(height: 12),
                         Text(
                           g.$2,
@@ -313,8 +326,12 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
               ),
               const SizedBox(width: 12),
               // Center: body figure
-              _imagePlaceholder(
-                  160, 340, Icons.accessibility_new, 'body_full'),
+              Image.asset(
+                'assets/images/img_fullbody.png',
+                width: 160,
+                height: 340,
+                fit: BoxFit.contain,
+              ),
               const SizedBox(width: 12),
               // Right column
               Column(
@@ -350,10 +367,11 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              part.isUpper ? Icons.back_hand : Icons.directions_walk,
-              size: 50,
-              color: isSelected ? AppColors.green : AppColors.grayHighlight,
+            Image.asset(
+              _bodyPartImage(part),
+              width: 80,
+              height: 80,
+              fit: BoxFit.contain,
             ),
             const SizedBox(height: 8),
             Text(
@@ -404,115 +422,62 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
             TextSpan(
               text: ' 치료를 위해 장비의 암을 구동장착부 준비 자세로 이동시켜 주세요.',
               style:
-                  AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+                  AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
             ),
           ]),
         ),
-        const SizedBox(height: 4),
-        Text(
-          "'이동' 버튼을 누르는 동안 장비의 암이 움직입니다.",
-          style: AppTextStyles.bodyMedium.copyWith(color: AppColors.green),
+        const SizedBox(height: 12),
+        RichText(
           textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        // Warning
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.orange, width: 1.5),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.warning_amber, color: AppColors.orange, size: 18),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  '안전을 위해 장비의 암과 구동장착부를 체결하지 마시고, 장비 주변에 장애물이 없도록 해주세요.',
-                  style: AppTextStyles.captionLight
-                      .copyWith(color: AppColors.orange),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const Spacer(),
-        // Robot arm image + move button
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            const Spacer(),
-            _imagePlaceholder(
-                240, 200, Icons.precision_manufacturing, 'roboarm'),
-            const Spacer(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '버튼에서 손을 떼면 이동이 중단됩니다',
-                  style: AppTextStyles.captionLight
-                      .copyWith(color: AppColors.textBlack),
-                ),
-                const SizedBox(height: 6),
-                _buildMoveButton(),
-              ],
+          text: TextSpan(children: [
+            TextSpan(
+              text: "'이동' 버튼을 누르는 동안 장비의 암이 ",
+              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
             ),
-          ],
+            TextSpan(
+              text: bp?.label ?? '',
+              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.green),
+            ),
+            TextSpan(
+              text: '의 ',
+              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
+            ),
+            TextSpan(
+              text: '$_entryDirection 진입',
+              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.green),
+            ),
+            TextSpan(
+              text: ' 방향으로 움직입니다.',
+              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
+            ),
+          ]),
+        ),
+        const SizedBox(height: 16),
+        // Warning
+        const WarningBox(),
+        const SizedBox(height: 16),
+        // Robot arm image
+        Expanded(
+          child: Image.asset(
+            'assets/images/img_arm.png',
+            width: double.infinity,
+            fit: BoxFit.contain,
+          ),
         ),
       ],
     );
   }
 
   Widget _buildMoveButton() {
-    if (_isMoving) {
-      return Container(
-        width: 240,
-        height: 60,
-        decoration: BoxDecoration(
-          color: AppColors.green,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.sync, color: AppColors.textWhite, size: 24),
-            const SizedBox(width: 8),
-            Text(
-              '이동중...',
-              style: AppTextStyles.bodyLarge
-                  .copyWith(color: AppColors.textWhite),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return GestureDetector(
-      onLongPress: () {
-        setState(() => _isMoving = true);
-        _simulateMovement();
-      },
-      child: Container(
-        width: 240,
-        height: 60,
-        decoration: BoxDecoration(
-          color: AppColors.mintGreen,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.green, width: 1.5),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.touch_app, color: AppColors.green, size: 24),
-            const SizedBox(width: 8),
-            Text(
-              '이동',
-              style:
-                  AppTextStyles.bodyLarge.copyWith(color: AppColors.green),
-            ),
-          ],
-        ),
+    return SizedBox(
+      width: 300,
+      height: 70,
+      child: LongPressMoveButton(
+        isMoving: _isMoving,
+        onLongPress: () {
+          setState(() => _isMoving = true);
+          _simulateMovement();
+        },
       ),
     );
   }
@@ -529,32 +494,16 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
       context: context,
       barrierColor: Colors.transparent,
       barrierDismissible: false,
-      builder: (ctx) => ModalOverlay(
-        dismissible: false,
-        barrierColor: AppColors.modalOverlayDark,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '장비의 암 이동이 완료되었습니다',
-              style: AppTextStyles.headingLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            AppButton(
-              label: '확인',
-              variant: ButtonVariant.green,
-              size: ButtonSize.medium,
-              onPressed: () {
-                Navigator.of(ctx).pop();
-                setState(() {
-                  _isMoving = false;
-                  _currentStep = 3; // Advance to step 4
-                });
-              },
-            ),
-          ],
-        ),
+      builder: (ctx) => ConfirmDialog(
+        title: '장비의 암 이동이 완료되었습니다',
+        confirmLabel: '확인',
+        onConfirm: () {
+          Navigator.of(ctx).pop();
+          setState(() {
+            _isMoving = false;
+            _currentStep = 3; // Advance to step 4
+          });
+        },
       ),
     );
   }
@@ -564,7 +513,6 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
   // ──────────────────────────────────────────
 
   Widget _buildStep4EquipmentAlign() {
-    final isUpper = _selectedBodyPart?.isUpper ?? true;
     final side = _selectedBodyPart?.sideLabel ?? '좌측';
     final limb = _selectedBodyPart?.limbLabel ?? '상지';
 
@@ -576,34 +524,27 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '장비 위치 정렬',
-                style: AppTextStyles.headingMedium
-                    .copyWith(color: AppColors.textBlack),
-                textAlign: TextAlign.center,
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  '장비 위치 정렬',
+                  style: AppTextStyles.headingMedium
+                      .copyWith(color: AppColors.textBlack),
+                ),
               ),
               const SizedBox(height: 12),
-              _numberedText(1,
-                  '$side $limb 치료를 위해 환자의 $side에서 진입해 주세요'),
+              _numberedTextWithEmphasis(1,
+                  '$side $limb', ' 치료를 위해 환자의 ', _entryDirection, '에서 진입해 주세요'),
               const SizedBox(height: 8),
               _numberedText(
                   2, '환자에 대해 수직이 되도록 손잡이를 잡고 장비를 정렬해 주세요'),
               const SizedBox(height: 12),
               Expanded(
-                child: Column(
-                  children: [
-                    _imagePlaceholder(
-                      320,
-                      120,
-                      isUpper
-                          ? Icons.airline_seat_flat
-                          : Icons.airline_seat_recline_normal,
-                      isUpper ? '상지 정렬' : '하지 정렬',
-                    ),
-                    const SizedBox(height: 8),
-                    _imagePlaceholder(
-                        200, 100, Icons.precision_manufacturing, '장비 정면'),
-                  ],
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/img_position_$_positionImageKey.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ],
@@ -617,11 +558,13 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '장비의 암의 끝 위치 정렬',
-                style: AppTextStyles.headingMedium
-                    .copyWith(color: AppColors.textBlack),
-                textAlign: TextAlign.center,
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  '장비의 암의 끝 위치 정렬',
+                  style: AppTextStyles.headingMedium
+                      .copyWith(color: AppColors.textBlack),
+                ),
               ),
               const SizedBox(height: 12),
               _numberedText(3, '장비의 암의 끝이 치료 관절을 향하게 해주세요.'),
@@ -630,8 +573,10 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                   4, '필요에 따라 사용환경에 맞추어 추가적으로 위치를 조정해 주세요.'),
               const Spacer(),
               Center(
-                child: _imagePlaceholder(280, 180,
-                    Icons.precision_manufacturing, '암 끝 정렬'),
+                child: Image.asset(
+                  'assets/images/img_position_${_positionImageKey}2.png',
+                  fit: BoxFit.contain,
+                ),
               ),
             ],
           ),
@@ -1364,6 +1309,36 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
   }
 
   // ════════════════════════════════════════════
+  // Data Helpers
+  // ════════════════════════════════════════════
+
+  String _bodyPartImage(BodyPartSelection part) {
+    return switch (part) {
+      BodyPartSelection.leftUpper => 'assets/images/img_upper_left3.png',
+      BodyPartSelection.rightUpper => 'assets/images/img_upper_right3.png',
+      BodyPartSelection.leftLower => 'assets/images/img_lower_left3.png',
+      BodyPartSelection.rightLower => 'assets/images/img_lower_right3.png',
+    };
+  }
+
+  String get _entryDirection {
+    final bp = _selectedBodyPart;
+    if (bp == null) return '좌측';
+    if (bp.isUpper) return bp.sideLabel;
+    return bp.isLeft ? '우측' : '좌측';
+  }
+
+  String get _positionImageKey {
+    return switch (_selectedBodyPart) {
+      BodyPartSelection.leftUpper => 'upper_left',
+      BodyPartSelection.rightUpper => 'upper_right',
+      BodyPartSelection.leftLower => 'lower_left',
+      BodyPartSelection.rightLower => 'lower_right',
+      _ => 'upper_left',
+    };
+  }
+
+  // ════════════════════════════════════════════
   // Shared Helpers
   // ════════════════════════════════════════════
 
@@ -1461,6 +1436,43 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         ),
         child: Icon(icon, color: AppColors.textWhite, size: 32),
       ),
+    );
+  }
+
+  /// 번호 + 부위/방향 강조 텍스트
+  Widget _numberedTextWithEmphasis(
+      int num, String bodyPart, String mid, String direction, String after) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$num. ',
+          style:
+              AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
+        ),
+        Expanded(
+          child: RichText(
+            text: TextSpan(children: [
+              TextSpan(
+                text: bodyPart,
+                style: AppTextStyles.bodyLarge.copyWith(color: AppColors.green),
+              ),
+              TextSpan(
+                text: mid,
+                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+              ),
+              TextSpan(
+                text: direction,
+                style: AppTextStyles.bodyLarge.copyWith(color: AppColors.green),
+              ),
+              TextSpan(
+                text: after,
+                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+              ),
+            ]),
+          ),
+        ),
+      ],
     );
   }
 

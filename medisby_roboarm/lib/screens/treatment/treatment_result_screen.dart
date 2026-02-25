@@ -7,8 +7,7 @@ import '../../widgets/content_card.dart';
 import '../../widgets/circular_progress.dart';
 import '../../widgets/long_press_move_button.dart';
 import '../../widgets/warning_box.dart';
-import '../../widgets/modal_overlay.dart';
-import '../../widgets/app_button.dart';
+import '../../widgets/confirm_dialog.dart';
 
 /// 치료 결과 → 구동장착부 탈착 → 착용 해제 → 홈 위치 이동 → 완료
 enum _EndPage {
@@ -282,11 +281,7 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
-        const WarningBox(
-          text: '이동 시 주변에 사람이나 장애물이 없는지 확인해 주세요.\n'
-              '장비의 암 주변에 장애물이 있으면 장애물을 옮기거나 장비를 이동시켜 주세요.',
-          boxed: true,
-        ),
+        const WarningBox(),
         const Spacer(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 100),
@@ -321,29 +316,13 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
       context: context,
       barrierColor: Colors.transparent,
       barrierDismissible: false,
-      builder: (ctx) => ModalOverlay(
-        dismissible: false,
-        barrierColor: AppColors.modalOverlayDark,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '장비의 암이 홈 위치로 이동을 완료하였습니다',
-              style: AppTextStyles.headingLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            AppButton(
-              label: '확인',
-              variant: ButtonVariant.green,
-              size: ButtonSize.medium,
-              onPressed: () {
-                Navigator.of(ctx).pop();
-                context.go('/');
-              },
-            ),
-          ],
-        ),
+      builder: (ctx) => ConfirmDialog(
+        title: '장비의 암이 홈 위치로\n이동을 완료하였습니다',
+        confirmLabel: '확인',
+        onConfirm: () {
+          Navigator.of(ctx).pop();
+          context.go('/');
+        },
       ),
     );
   }

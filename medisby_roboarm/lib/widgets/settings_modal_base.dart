@@ -42,7 +42,7 @@ class SettingsModalBase extends StatelessWidget {
         width: AppDimensions.modalCardWidth,
         height: AppDimensions.modalCardHeight,
         decoration: BoxDecoration(
-          color: AppColors.settingsCardBg,
+          color: Colors.black.withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(AppDimensions.cardBorderRadius),
         ),
         child: Stack(

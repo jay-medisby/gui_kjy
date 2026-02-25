@@ -70,7 +70,7 @@ class MovingStepView extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
-        const WarningBox(boxed: true),
+        const WarningBox(),
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 60),

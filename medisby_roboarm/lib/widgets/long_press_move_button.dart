@@ -46,7 +46,7 @@ class LongPressMoveButton extends StatelessWidget {
     }
 
     return GestureDetector(
-      onLongPress: onLongPress,
+      onLongPressDown: onLongPress != null ? (_) => onLongPress!() : null,
       child: Container(
         width: double.infinity,
         height: 70,

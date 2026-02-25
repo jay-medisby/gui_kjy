@@ -6,8 +6,7 @@ import '../../theme/text_styles.dart';
 import '../../widgets/content_card.dart';
 import '../../widgets/gauge_meter.dart';
 import '../../widgets/trajectory_progress_bar.dart';
-import '../../widgets/app_button.dart';
-import '../../widgets/modal_overlay.dart';
+import '../../widgets/confirm_dialog.dart';
 
 class TreatmentDashboard extends StatefulWidget {
   const TreatmentDashboard({super.key});
@@ -300,35 +299,11 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
       context: context,
       barrierColor: Colors.transparent,
       barrierDismissible: false,
-      builder: (ctx) => ModalOverlay(
-        dismissible: false,
-        barrierColor: AppColors.modalOverlayDark,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.pause, color: AppColors.textWhite, size: 32),
-                const SizedBox(width: 8),
-                Text('일시 정지', style: AppTextStyles.headingLarge),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Text(
-              "치료 재개를 원하시면 '치료 재개' 버튼을 누르거나\n핸드 스위치의 'START' 버튼을 누르세요",
-              style: AppTextStyles.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            AppButton(
-              label: '치료 재개',
-              variant: ButtonVariant.white,
-              size: ButtonSize.dialog,
-              onPressed: () => Navigator.of(ctx).pop(),
-            ),
-          ],
-        ),
+      builder: (ctx) => ConfirmDialog(
+        title: '일시 정지',
+        message: "치료 재개를 원하시면 '치료 재개' 버튼을 누르거나\n핸드 스위치의 'START' 버튼을 누르세요",
+        confirmLabel: '치료 재개',
+        onConfirm: () => Navigator.of(ctx).pop(),
       ),
     );
   }
@@ -339,37 +314,15 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
       context: context,
       barrierColor: Colors.transparent,
       barrierDismissible: false,
-      builder: (ctx) => ModalOverlay(
-        dismissible: false,
-        barrierColor: AppColors.modalOverlayDark,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('치료를 종료하시겠습니까?', style: AppTextStyles.headingLarge),
-            const SizedBox(height: 32),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AppButton(
-                  label: '아니오',
-                  variant: ButtonVariant.white,
-                  size: ButtonSize.dialog,
-                  onPressed: () => Navigator.of(ctx).pop(),
-                ),
-                const SizedBox(width: 24),
-                AppButton(
-                  label: '예',
-                  variant: ButtonVariant.white,
-                  size: ButtonSize.dialog,
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    context.go('/treatment/result');
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
+      builder: (ctx) => ConfirmDialog(
+        title: '치료를 종료하시겠습니까?',
+        cancelLabel: '아니오',
+        confirmLabel: '예',
+        onCancel: () => Navigator.of(ctx).pop(),
+        onConfirm: () {
+          Navigator.of(ctx).pop();
+          context.go('/treatment/result');
+        },
       ),
     );
   }
@@ -380,37 +333,15 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
       context: context,
       barrierColor: Colors.transparent,
       barrierDismissible: false,
-      builder: (ctx) => ModalOverlay(
-        dismissible: false,
-        barrierColor: AppColors.modalOverlayDark,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('궤적을 추가하시겠습니까?', style: AppTextStyles.headingLarge),
-            const SizedBox(height: 32),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AppButton(
-                  label: '아니오',
-                  variant: ButtonVariant.white,
-                  size: ButtonSize.dialog,
-                  onPressed: () => Navigator.of(ctx).pop(),
-                ),
-                const SizedBox(width: 24),
-                AppButton(
-                  label: '예',
-                  variant: ButtonVariant.white,
-                  size: ButtonSize.dialog,
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    context.go('/treatment/trajectory-add');
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
+      builder: (ctx) => ConfirmDialog(
+        title: '궤적을 추가하시겠습니까?',
+        cancelLabel: '아니오',
+        confirmLabel: '예',
+        onCancel: () => Navigator.of(ctx).pop(),
+        onConfirm: () {
+          Navigator.of(ctx).pop();
+          context.go('/treatment/trajectory-add');
+        },
       ),
     );
   }

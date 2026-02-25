@@ -12,10 +12,16 @@ import 'screens/treatment/treatment_dashboard.dart';
 import 'screens/treatment/trajectory_add_flow.dart';
 import 'screens/treatment/treatment_result_screen.dart';
 import 'screens/exit/exit_flow.dart';
+import 'preview/previews.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
+    // ── Dev Catalog (사이드바 없이 독립 페이지) ──
+    GoRoute(
+      path: '/dev',
+      builder: (context, state) => const DevCatalogScreen(),
+    ),
     ShellRoute(
       builder: (context, state, child) {
         final location = state.uri.path;

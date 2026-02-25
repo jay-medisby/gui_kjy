@@ -127,6 +127,7 @@ class SidebarMenu extends StatelessWidget {
   Widget _buildMenuButton(MenuType menu) {
     final isActive = currentMenu == menu;
     final isExit = menu == MenuType.exit;
+    final isSecondary = menu == MenuType.settings || menu == MenuType.exit;
 
     // Figma 색상 매핑
     Color backgroundColor;
@@ -137,10 +138,14 @@ class SidebarMenu extends StatelessWidget {
       // 활성: 블루 배경 (Figma: #3B82F6)
       backgroundColor = AppColors.blue;
       textColor = AppColors.textWhite;
+    } else if (isSecondary) {
+      // 하단 그룹: 투명 배경, 테두리 없음
+      backgroundColor = Colors.transparent;
+      textColor = isExit ? AppColors.textRed : AppColors.textWhite;
     } else {
       // 비활성: Figma rgba(255,255,255,0.05) + border
       backgroundColor = AppColors.buttonInactive;
-      textColor = isExit ? AppColors.textRed : AppColors.textWhite;
+      textColor = AppColors.textWhite;
       border = Border.all(color: AppColors.borderGray, width: 1);
     }
 

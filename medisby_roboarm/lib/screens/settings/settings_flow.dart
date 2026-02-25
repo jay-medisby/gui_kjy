@@ -321,7 +321,7 @@ class _SettingsFlowState extends State<SettingsFlow> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
-          const WarningBox(boxed: true),
+          const WarningBox(),
           const SizedBox(height: 20),
           LongPressMoveButton(
             isMoving: _isMoving,
