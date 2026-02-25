@@ -54,4 +54,25 @@ class AppColors {
   static const Color emergencyAccent = Color(0xFFFF0000); // 비상정지 강조색
   static const Color safeBg = Color(0xFF3B3B10); // 보호정지 모달 배경
   static const Color safeAccent = Color(0xFFCCB800); // 보호정지 강조색
+
+  // ── Content Area ──
+  static const Color divider = Color(0xFFE0E0E0); // 구분선, 카드 테두리
+  static const Color contentBgGray = Color(0xFFF5F5F5); // 연한 회색 배경
+  static const Color contentBgGreen = Color(0xFFF0FFF0); // 연한 초록 배경
+  static const Color placeholderBg = Color(0xFFE8E8E8); // 이미지 플레이스홀더
+  static const Color buttonDisabled = Color(0xFFD0D0D0); // 비활성 카드 테두리
+  static const Color darkGray = Color(0xFF333333); // 다크 툴팁 배경
+
+  // ── Gauge / Progress ──
+  static const Color gaugeYellow = Color(0xFFFFCA28); // 게이지 중간 구간
+  static const Color gaugeBg = Color(0xFFE4E4E4); // 게이지/프로그레스 트랙
+
+  // ── Trajectory ──
+  static const Color trajectoryMarker = Color(0xFF6C6A6A); // 궤적 마커
+
+  // ── Warning Tooltip ──
+  static const Color warningBgLight = Color(0xFFFFF8E1); // 툴팁 배경
+  static const Color warningYellow = Color(0xFFFFD54F); // 툴팁 테두리
+  static const Color warningAmber = Color(0xFFFFB300); // 툴팁 아이콘
+  static const Color warningOrangeDark = Color(0xFFFF8F00); // 툴팁 텍스트
 }

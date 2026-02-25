@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/body_part.dart';
 import '../../theme/colors.dart';
+import '../../theme/dimensions.dart';
 import '../../theme/text_styles.dart';
 import '../../widgets/content_card.dart';
 import '../../widgets/step_indicator.dart';
@@ -138,8 +139,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 380,
-        height: 55,
+        width: AppDimensions.navButtonWidth,
+        height: AppDimensions.navButtonHeight,
         decoration: BoxDecoration(
           color: onPressed != null
               ? AppColors.green
@@ -244,11 +245,11 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                     width: 210,
                     decoration: BoxDecoration(
                       color: AppColors.cardWhite,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
                       border: Border.all(
                         color: isSelected
                             ? AppColors.green
-                            : const Color(0xFFD0D0D0),
+                            : AppColors.buttonDisabled,
                         width: isSelected ? 3 : 1,
                       ),
                     ),
@@ -340,9 +341,9 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         height: 150,
         decoration: BoxDecoration(
           color: AppColors.cardWhite,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
           border: Border.all(
-            color: isSelected ? AppColors.green : const Color(0xFFD0D0D0),
+            color: isSelected ? AppColors.green : AppColors.buttonDisabled,
             width: isSelected ? 3 : 1,
           ),
         ),
@@ -609,7 +610,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           ),
         ),
         // Divider
-        Container(width: 1, color: const Color(0xFFE0E0E0)),
+        Container(width: 1, color: AppColors.divider),
         const SizedBox(width: 16),
         // Right column: 장비의 암의 끝 위치 정렬
         Expanded(
@@ -746,8 +747,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8E8E8),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.placeholderBg,
+                    borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
                   ),
                   alignment: Alignment.center,
                   child: Text(
@@ -830,8 +831,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFF0FFF0),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.contentBgGreen,
+              borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -876,13 +877,13 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         Container(
             width: 1,
             margin: const EdgeInsets.symmetric(horizontal: 8),
-            color: const Color(0xFFE0E0E0)),
+            color: AppColors.divider),
         // Right: 시작 자세 입력 완료
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.contentBgGray,
+              borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -921,8 +922,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0FFF0),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.contentBgGreen,
+                  borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
                 ),
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -969,21 +970,21 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFF8E1),
+                          color: AppColors.warningBgLight,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                              color: const Color(0xFFFFD54F)),
+                              color: AppColors.warningYellow),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.lightbulb,
-                                color: const Color(0xFFFFB300), size: 18),
+                                color: AppColors.warningAmber, size: 18),
                             const SizedBox(width: 4),
                             Text(
                               '한 방향 궤적이란?',
                               style: AppTextStyles.caption.copyWith(
-                                  color: const Color(0xFFFF8F00)),
+                                  color: AppColors.warningOrangeDark),
                             ),
                           ],
                         ),
@@ -1005,13 +1006,13 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
             Container(
                 width: 1,
                 margin: const EdgeInsets.symmetric(horizontal: 8),
-                color: const Color(0xFFE0E0E0)),
+                color: AppColors.divider),
             // Right: 궤적 입력 완료
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F5F5),
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.contentBgGray,
+                  borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
                 ),
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -1044,8 +1045,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
               width: 400,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF333333),
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.darkGray,
+                borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
               ),
               child: Row(
                 children: [
@@ -1105,8 +1106,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFFE0E0E0)),
-            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.divider),
+            borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
           ),
           child: Row(
             children: [
@@ -1187,8 +1188,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: AppColors.cardWhite,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE0E0E0)),
+                  borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
+                  border: Border.all(color: AppColors.divider),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1226,8 +1227,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
                   color: AppColors.cardWhite,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE0E0E0)),
+                  borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
+                  border: Border.all(color: AppColors.divider),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -1372,8 +1373,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
       width: w,
       height: h,
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.contentBgGray,
+        borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

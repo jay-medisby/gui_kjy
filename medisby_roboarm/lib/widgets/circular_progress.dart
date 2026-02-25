@@ -41,7 +41,7 @@ class CircularProgress extends StatelessWidget {
         painter: _CircularProgressPainter(
           value: value.clamp(0.0, 1.0),
           activeColor: color,
-          trackColor: trackColor ?? const Color(0xFFE4E4E4),
+          trackColor: trackColor ?? AppColors.gaugeBg,
           strokeWidth: strokeWidth,
         ),
         child: Center(

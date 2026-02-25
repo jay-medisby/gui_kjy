@@ -23,14 +23,15 @@ enum HomeStatus {
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final HomeStatus? initialStatus;
+  const HomeScreen({super.key, this.initialStatus});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  HomeStatus _status = HomeStatus.ready;
+  late HomeStatus _status = widget.initialStatus ?? HomeStatus.ready;
 
   @override
   Widget build(BuildContext context) {

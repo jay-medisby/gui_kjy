@@ -68,7 +68,7 @@ class GaugeMeter extends StatelessWidget {
 
   Color get _valueColor {
     if (value < 0.5) return AppColors.green;
-    if (value < 0.75) return const Color(0xFFFFCA28);
+    if (value < 0.75) return AppColors.gaugeYellow;
     return AppColors.red;
   }
 }
@@ -80,9 +80,9 @@ class _GaugePainter extends CustomPainter {
 
   // 게이지 구간 색상 (Figma Treatment 섹션 색상 토큰 기반)
   static const _segments = [
-    (0.0, 0.5, Color(0xFF10B981)),   // 초록: 정상
-    (0.5, 0.75, Color(0xFFFFCA28)),  // 노랑: 주의
-    (0.75, 1.0, Color(0xFFFF6D6D)),  // 빨강: 위험
+    (0.0, 0.5, AppColors.green),          // 초록: 정상
+    (0.5, 0.75, AppColors.gaugeYellow),   // 노랑: 주의
+    (0.75, 1.0, AppColors.red),           // 빨강: 위험
   ];
 
   static const double _startAngle = math.pi; // 180° (좌측 수평)
@@ -98,7 +98,7 @@ class _GaugePainter extends CustomPainter {
 
     // ── 배경 트랙 (연한 회색) ──
     final bgPaint = Paint()
-      ..color = const Color(0xFFE4E4E4)
+      ..color = AppColors.gaugeBg
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
@@ -132,7 +132,7 @@ class _GaugePainter extends CustomPainter {
     );
 
     final needlePaint = Paint()
-      ..color = const Color(0xFF404040)
+      ..color = AppColors.grayDark
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
@@ -141,7 +141,7 @@ class _GaugePainter extends CustomPainter {
 
     // ── 중심 점 ──
     final dotPaint = Paint()
-      ..color = const Color(0xFF404040)
+      ..color = AppColors.grayDark
       ..style = PaintingStyle.fill;
     canvas.drawCircle(center, 6, dotPaint);
   }

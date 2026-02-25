@@ -25,10 +25,10 @@ class TrajectoryProgressBar extends StatelessWidget {
   });
 
   // Figma 색상 토큰
-  static const _completedColor = Color(0x6610B981); // rgba(16,185,129,0.4)
-  static const _remainingColor = Color(0x803057B9); // rgba(48,87,185,0.5)
-  static const _markerColor = Color(0xFF6C6A6A);
-  static const _trackBorderColor = Color(0xFFA6A6A6);
+  static final _completedColor = AppColors.green.withValues(alpha: 0.4); // rgba(16,185,129,0.4)
+  static final _remainingColor = AppColors.blueDeep.withValues(alpha: 0.5); // rgba(48,87,185,0.5)
+  static const _markerColor = AppColors.trajectoryMarker;
+  static const _trackBorderColor = AppColors.grayHighlight;
 
   @override
   Widget build(BuildContext context) {
@@ -104,9 +104,9 @@ class TrajectoryProgressBar extends StatelessWidget {
                               color: AppColors.green,
                               width: 2.5,
                             ),
-                            boxShadow: const [
+                            boxShadow: [
                               BoxShadow(
-                                color: Color(0x40000000),
+                                color: AppColors.cardBlack.withValues(alpha: 0.25),
                                 blurRadius: 3,
                                 offset: Offset(0, 1),
                               ),

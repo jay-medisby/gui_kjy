@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/colors.dart';
+import '../../theme/dimensions.dart';
 import '../../theme/text_styles.dart';
 import '../../widgets/content_card.dart';
 import '../../widgets/circular_progress.dart';
@@ -68,7 +69,7 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
                 const CircularProgress(
                   value: 0.6,
                   size: 160,
-                  activeColor: Color(0xFF002060),
+                  activeColor: AppColors.background,
                   hidePercent: true,
                 ),
                 '6',
@@ -80,7 +81,7 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
                 const CircularProgress(
                   value: 1.0,
                   size: 160,
-                  activeColor: Color(0xFF002060),
+                  activeColor: AppColors.background,
                   hidePercent: true,
                 ),
                 '00:30:30',
@@ -92,7 +93,7 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
                 const CircularProgress(
                   value: 0.5,
                   size: 160,
-                  activeColor: Color(0xFF002060),
+                  activeColor: AppColors.background,
                   hidePercent: true,
                 ),
                 '5',
@@ -105,8 +106,8 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
           child: GestureDetector(
             onTap: () => setState(() => _page = _EndPage.separateArm),
             child: Container(
-              width: 380,
-              height: 55,
+              width: AppDimensions.navButtonWidth,
+              height: AppDimensions.navButtonHeight,
               decoration: BoxDecoration(
                 color: AppColors.green,
                 borderRadius: BorderRadius.circular(10),
@@ -127,8 +128,8 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFE0E0E0)),
-          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.divider),
+          borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -186,8 +187,8 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8E8E8),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.placeholderBg,
+                    borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
                   ),
                   alignment: Alignment.center,
                   child: Text('분리 이미지',
@@ -236,8 +237,8 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8E8E8),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.placeholderBg,
+                    borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
                   ),
                   alignment: Alignment.center,
                   child: Text('분리 이미지',
@@ -355,8 +356,8 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 380,
-        height: 55,
+        width: AppDimensions.navButtonWidth,
+        height: AppDimensions.navButtonHeight,
         decoration: BoxDecoration(
           color: AppColors.green,
           borderRadius: BorderRadius.circular(10),

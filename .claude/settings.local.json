@@ -15,7 +15,9 @@
       "Bash(cd D:/__Medisby/gui_kjy/medisby_roboarm && dart analyze lib/ 2>&1)",
       "Bash(cd D://__Medisby/gui_kjy/medisby_roboarm && dart analyze lib/ 2>&1)",
       "Bash(grep:*)",
-      "Bash(flutter:*)"
+      "Bash(flutter:*)",
+      "Bash(git checkout -- lib/screens/pre_treatment/pre_treatment_flow.dart)",
+      "WebFetch(domain:api.flutter.dev)"
     ]
   }
 }

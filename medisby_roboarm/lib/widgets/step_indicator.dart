@@ -28,7 +28,7 @@ class StepIndicator extends StatelessWidget {
     this.dotSize = 20,
     this.gap = 14,
     this.activeColor = AppColors.green,
-    this.inactiveColor = const Color(0xFFA6A6A6),
+    this.inactiveColor = AppColors.grayHighlight,
     this.completedColor = AppColors.green,
   });
 

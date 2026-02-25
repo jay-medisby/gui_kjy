@@ -21,6 +21,8 @@ class AppDimensions {
   static const double cardPaddingMedium = 16;
   static const double cardPaddingLarge = 20;
   static const double cardBorderRadius = 10;
+  static const double smallBorderRadius = 8;    // 콘텐츠 패널, 입력 필드 등
+  static const double mediumBorderRadius = 12;  // 카드 컨테이너, 정보 패널 등
 
   // ── 버튼 ──
   static const double buttonRadius = 10;
@@ -28,6 +30,8 @@ class AppDimensions {
   static const double buttonPaddingVertical = 10;
   static const double buttonPaddingHorizontal = 30;
   static const double menuButtonHeight = 44; // 메뉴 버튼 높이 (개별)
+  static const double navButtonWidth = 380;   // 녹색 네비게이션 버튼
+  static const double navButtonHeight = 55;
   static const double actionButtonWidth = 516;
   static const double actionButtonHeight = 91;
   static const double modalButtonWidth = 218;

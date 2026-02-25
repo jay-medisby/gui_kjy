@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
 import '../../theme/text_styles.dart';
 import '../../theme/dimensions.dart';
+import '../../widgets/app_button.dart';
 import '../../widgets/modal_overlay.dart';
 import '../../widgets/long_press_move_button.dart';
 
@@ -179,7 +180,7 @@ class _StopFlowState extends State<StopFlow> {
                     width: 120,
                     height: 120,
                     decoration: BoxDecoration(
-                      color: const Color(0x33FF0000),
+                      color: AppColors.emergencyAccent.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     alignment: Alignment.center,
@@ -349,18 +350,11 @@ class _StopFlowState extends State<StopFlow> {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
-        GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: Container(
-            width: 200,
-            height: 60,
-            decoration: BoxDecoration(
-              color: AppColors.green,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            alignment: Alignment.center,
-            child: Text('확인', style: AppTextStyles.headingMedium),
-          ),
+        AppButton(
+          label: '확인',
+          variant: ButtonVariant.green,
+          size: ButtonSize.dialog,
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ],
     );
@@ -414,7 +408,7 @@ class _StopFlowState extends State<StopFlow> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border.all(color: accentColor, width: 1.5),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
       ),
       child: child,
     );
@@ -425,8 +419,8 @@ class _StopFlowState extends State<StopFlow> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 380,
-        height: 55,
+        width: AppDimensions.navButtonWidth,
+        height: AppDimensions.navButtonHeight,
         decoration: BoxDecoration(
           color: accentColor,
           borderRadius: BorderRadius.circular(10),

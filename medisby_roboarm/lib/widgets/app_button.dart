@@ -4,14 +4,15 @@ import '../theme/text_styles.dart';
 import '../theme/dimensions.dart';
 
 /// 버튼 색상 variant
-enum ButtonVariant { green, blue, red, dark }
+enum ButtonVariant { green, blue, red, dark, white }
 
 /// 버튼 크기
 /// Figma 실측:
 ///   large  — 516×91, borderRadius 10, padding 10×30 (액션 버튼)
 ///   medium — 218×70, borderRadius 35, padding 10   (모달 확인 버튼)
 ///   small  — 170×60, borderRadius 35, padding 10   (미니 버튼)
-enum ButtonSize { large, medium, small }
+///   dialog — 200×60, borderRadius 30              (다이얼로그 확인 버튼)
+enum ButtonSize { large, medium, small, dialog }
 
 /// 공통 버튼 위젯
 /// 모든 화면에서 재사용: 액션 버튼, 모달 확인, 일시정지 등
@@ -98,6 +99,14 @@ class AppButton extends StatelessWidget {
           textStyle: AppTextStyles.bodyLarge,
           iconSize: 20,
         );
+      case ButtonSize.dialog:
+        return _SizeConfig(
+          width: 200,
+          height: 60,
+          borderRadius: 30,
+          textStyle: AppTextStyles.headingMedium,
+          iconSize: 24,
+        );
     }
   }
 
@@ -125,9 +134,15 @@ class AppButton extends StatelessWidget {
       case ButtonVariant.dark:
         // Figma: #262626 fill, #FFFFFF stroke 1px
         return _ColorConfig(
-          background: const Color(0xFF262626),
+          background: AppColors.settingsCardBg,
           foreground: AppColors.textWhite,
           borderColor: AppColors.textWhite,
+        );
+      case ButtonVariant.white:
+        // 다이얼로그 확인/취소 버튼: 흰색 배경, 검정 텍스트
+        return _ColorConfig(
+          background: AppColors.cardWhite,
+          foreground: AppColors.textBlack,
         );
     }
   }

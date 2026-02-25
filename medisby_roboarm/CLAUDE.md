@@ -166,7 +166,7 @@ assets/
 | sidebar_menu.dart | SidebarMenu | 좌측 230px, MenuType enum, 활성/비활성 |
 | status_bar.dart | StatusBar | 하단 29px, 연결상태 + HH:MM:SS |
 | device_status_badge.dart | DeviceStatusBadge | 170×70, DeviceStatus enum (Online/Ready/Run/Emergency) |
-| app_button.dart | AppButton | ButtonVariant(green/blue/red/dark) × ButtonSize(large/medium/small) |
+| app_button.dart | AppButton | ButtonVariant(green/blue/red/dark/white) × ButtonSize(large/medium/small/dialog) |
 | content_card.dart | ContentCard | 흰색 라운드 카드, 커스텀 크기/radius/padding |
 | modal_overlay.dart | ModalOverlay | rgba(0,0,0,0.6) 배경, 중앙 child |
 | confirm_dialog.dart | ConfirmDialog | 970×544 모달, 제목/메시지/확인/취소/뒤로/닫기 |
@@ -178,6 +178,7 @@ assets/
 | joint_selector.dart | JointSelector | J1~J6 관절 선택 그리드 (ROM/속도 테스트) |
 | long_press_move_button.dart | LongPressMoveButton | 롱프레스 이동 버튼 (Home/Reset 공통) |
 | warning_box.dart | WarningBox | 오렌지 경고 텍스트 (boxed/inline) |
+| flow_step_widgets.dart | DetachStepView, MovingStepView | Exit/GoHome 공통 탈착·이동 스텝 위젯 |
 
 ### 화면 목록 (lib/screens/)
 | 경로 | 위젯 | 설명 |
@@ -213,4 +214,51 @@ assets/
 - [x] Phase 5: Treatment 섹션
 - [x] Phase 6: Exit + Stop 섹션
 - [x] Phase 7: Go-Home(Popups) + 폴리싱
-- [ ] Phase 8: 상태 관리 & 통합
+- [x] Phase 8: 코드 리팩토링 (아래 검토 결과 기반) ✅ 2025-02-25
+- [ ] Phase 9: 상태 관리 & 백엔드 통합
+
+---
+
+## 코드 검토 결과 (2025-02-25)
+
+### 검토 통과 항목
+- **flutter analyze**: 경고/에러 0건
+- **라우팅 정합성**: 10개 context.go() 호출 모두 router.dart 정의와 일치
+- **Provider 사용**: watch/read 구분 정확, 안티패턴 없음
+- **Navigator 사용**: 모달 dismiss 용도로만 사용 (라우팅과 혼용 없음)
+- **리소스 관리**: Timer dispose 정상, 메모리 누수 없음
+- **에셋 경로**: 모든 참조 파일 존재 확인
+
+### 리팩토링 대상 (우선순위순)
+
+#### P0: 대형 파일 분할 — ⏸️ 보류 (Dart 언어 제약)
+Dart의 `part`/`extension` 패턴으로 클래스 분할 시도 → 실패.
+- Extension 간 메서드 교차 호출 불가 (Dart에서 `this.method()`는 extension 메서드를 탐색하지 않음)
+- `setState`가 `@protected`이므로 extension에서 호출 시 경고 발생
+- 대안: 별도 StatelessWidget으로 분할하려면 콜백/상태 전달이 과도하여 비실용적
+
+#### P1: 하드코딩 컬러 → AppColors 통합 — ✅ 완료
+- colors.dart에 14개 토큰 추가 (divider, contentBgGray, contentBgGreen, placeholderBg, buttonDisabled, darkGray, gaugeYellow, gaugeBg, trajectoryMarker, warningBgLight, warningYellow, warningAmber, warningOrangeDark)
+- 10개 파일에서 ~43개 하드코딩 Color(0x...) 교체
+
+#### P2: 중복 버튼 → AppButton 통합 — ✅ 완료
+- AppButton에 `ButtonVariant.white` (흰색 배경/검정 텍스트) + `ButtonSize.dialog` (200×60) 추가
+- exit_flow, go_home_flow, treatment_dashboard, stop_flow의 커스텀 버튼 → AppButton 교체
+- treatment_result_screen (380×55) 및 stop_flow의 accent 색상 버튼은 고유 사이즈/스타일이므로 유지
+
+#### P3: 중복 플로우 스텝 통합 — ✅ 완료
+- `lib/widgets/flow_step_widgets.dart` 생성: `DetachStepView` + `MovingStepView` 공통 위젯
+- exit_flow.dart, go_home_flow.dart에서 중복 코드 → 공통 위젯 사용으로 교체
+
+#### P4: 미사용 스텁 파일 정리 — ✅ 완료
+- 삭제된 파일 4개 (settings_flow.dart에 이미 통합 구현되어 미참조):
+  - admin_menu_screen.dart, rom_test_flow.dart, vel_test_flow.dart, user_management_screen.dart
+
+#### P5: 하드코딩 치수 → AppDimensions 추가 — ✅ 완료
+- dimensions.dart에 4개 상수 추가: navButtonWidth(380), navButtonHeight(55), smallBorderRadius(8), mediumBorderRadius(12)
+- 7개 nav 버튼 인스턴스, 10개 BorderRadius.circular(12), 14개 BorderRadius.circular(8) 교체
+
+### 리팩토링 시 원칙
+- 기능 변경 없이 구조만 개선 (동작 동일 유지)
+- 파일 분할 시 import 경로 정리 + flutter analyze 통과 확인
+- 한 번에 하나의 P단계만 진행하고 빌드 확인 후 다음 단계로

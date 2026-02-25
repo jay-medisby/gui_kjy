@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/colors.dart';
+import '../../theme/dimensions.dart';
 import '../../theme/text_styles.dart';
 import '../../widgets/content_card.dart';
 import '../../widgets/app_button.dart';
@@ -99,8 +100,8 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFF0FFF0),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.contentBgGreen,
+              borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -147,13 +148,13 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
         Container(
             width: 1,
             margin: const EdgeInsets.symmetric(horizontal: 8),
-            color: const Color(0xFFE0E0E0)),
+            color: AppColors.divider),
         // Right: 입력 완료
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.contentBgGray,
+              borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -214,8 +215,8 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 380,
-        height: 55,
+        width: AppDimensions.navButtonWidth,
+        height: AppDimensions.navButtonHeight,
         decoration: BoxDecoration(
           color: AppColors.green,
           borderRadius: BorderRadius.circular(10),

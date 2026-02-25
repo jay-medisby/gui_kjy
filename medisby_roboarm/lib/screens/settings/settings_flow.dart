@@ -471,7 +471,7 @@ class _SettingsFlowState extends State<SettingsFlow> {
             height: 50,
             decoration: BoxDecoration(
               color: AppColors.cardWhite,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
             ),
             alignment: Alignment.center,
             child: Text(
@@ -1106,7 +1106,7 @@ class _SettingsFlowState extends State<SettingsFlow> {
             height: 44,
             decoration: BoxDecoration(
               color: AppColors.cardWhite,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
@@ -1211,7 +1211,7 @@ class _SettingsFlowState extends State<SettingsFlow> {
           decoration: BoxDecoration(
             color: Colors.transparent,
             border: Border.all(color: AppColors.settingsCardBorder),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
           ),
           child: Row(
             children: [
@@ -1266,7 +1266,7 @@ class _SettingsFlowState extends State<SettingsFlow> {
           decoration: BoxDecoration(
             color: Colors.transparent,
             border: Border.all(color: AppColors.settingsCardBorder),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/colors.dart';
+import '../../theme/dimensions.dart';
 import '../../theme/text_styles.dart';
 import '../../widgets/content_card.dart';
 import '../../widgets/gauge_meter.dart';
 import '../../widgets/trajectory_progress_bar.dart';
+import '../../widgets/app_button.dart';
 import '../../widgets/modal_overlay.dart';
 
 class TreatmentDashboard extends StatefulWidget {
@@ -97,8 +99,8 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFE0E0E0)),
-              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.divider),
+              borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -129,8 +131,8 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFE0E0E0)),
-              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.divider),
+              borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -150,8 +152,8 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFE0E0E0)),
-              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.divider),
+              borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -214,8 +216,8 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
         GestureDetector(
           onTap: _showTrajectoryAddConfirm,
           child: Container(
-            width: 380,
-            height: 55,
+            width: AppDimensions.navButtonWidth,
+            height: AppDimensions.navButtonHeight,
             decoration: BoxDecoration(
               color: AppColors.green,
               borderRadius: BorderRadius.circular(10),
@@ -230,8 +232,8 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
         GestureDetector(
           onTap: _showQuitConfirm,
           child: Container(
-            width: 380,
-            height: 55,
+            width: AppDimensions.navButtonWidth,
+            height: AppDimensions.navButtonHeight,
             decoration: BoxDecoration(
               color: AppColors.green,
               borderRadius: BorderRadius.circular(10),
@@ -319,7 +321,12 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
-            _modalWhiteButton('치료 재개', () => Navigator.of(ctx).pop()),
+            AppButton(
+              label: '치료 재개',
+              variant: ButtonVariant.white,
+              size: ButtonSize.dialog,
+              onPressed: () => Navigator.of(ctx).pop(),
+            ),
           ],
         ),
       ),
@@ -343,12 +350,22 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _modalWhiteButton('아니오', () => Navigator.of(ctx).pop()),
+                AppButton(
+                  label: '아니오',
+                  variant: ButtonVariant.white,
+                  size: ButtonSize.dialog,
+                  onPressed: () => Navigator.of(ctx).pop(),
+                ),
                 const SizedBox(width: 24),
-                _modalWhiteButton('예', () {
-                  Navigator.of(ctx).pop();
-                  context.go('/treatment/result');
-                }),
+                AppButton(
+                  label: '예',
+                  variant: ButtonVariant.white,
+                  size: ButtonSize.dialog,
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    context.go('/treatment/result');
+                  },
+                ),
               ],
             ),
           ],
@@ -374,12 +391,22 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _modalWhiteButton('아니오', () => Navigator.of(ctx).pop()),
+                AppButton(
+                  label: '아니오',
+                  variant: ButtonVariant.white,
+                  size: ButtonSize.dialog,
+                  onPressed: () => Navigator.of(ctx).pop(),
+                ),
                 const SizedBox(width: 24),
-                _modalWhiteButton('예', () {
-                  Navigator.of(ctx).pop();
-                  context.go('/treatment/trajectory-add');
-                }),
+                AppButton(
+                  label: '예',
+                  variant: ButtonVariant.white,
+                  size: ButtonSize.dialog,
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    context.go('/treatment/trajectory-add');
+                  },
+                ),
               ],
             ),
           ],
@@ -388,23 +415,4 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
     );
   }
 
-  Widget _modalWhiteButton(String label, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 200,
-        height: 60,
-        decoration: BoxDecoration(
-          color: AppColors.cardWhite,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style:
-              AppTextStyles.headingMedium.copyWith(color: AppColors.textBlack),
-        ),
-      ),
-    );
-  }
 }

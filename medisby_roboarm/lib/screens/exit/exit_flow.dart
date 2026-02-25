@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../theme/colors.dart';
 import '../../theme/text_styles.dart';
+import '../../widgets/app_button.dart';
 import '../../widgets/settings_modal_base.dart';
-import '../../widgets/long_press_move_button.dart';
-import '../../widgets/warning_box.dart';
+import '../../widgets/flow_step_widgets.dart';
 
 /// 종료 플로우 (showDialog 모달)
 /// 스크린샷: 62~64 — 종료 확인 → 구동장착부 탈착 → 홈 이동 → 완료
@@ -65,9 +64,19 @@ class _ExitFlowState extends State<ExitFlow> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _whiteButton('아니오', () => Navigator.of(context).pop()),
+            AppButton(
+              label: '아니오',
+              variant: ButtonVariant.white,
+              size: ButtonSize.dialog,
+              onPressed: () => Navigator.of(context).pop(),
+            ),
             const SizedBox(width: 24),
-            _whiteButton('예', () => setState(() => _step = _ExitStep.detach)),
+            AppButton(
+              label: '예',
+              variant: ButtonVariant.white,
+              size: ButtonSize.dialog,
+              onPressed: () => setState(() => _step = _ExitStep.detach),
+            ),
           ],
         ),
       ],
@@ -77,57 +86,20 @@ class _ExitFlowState extends State<ExitFlow> {
   // ── 구동장착부 탈착 ──
 
   Widget _buildDetach() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          "구동장착부를 탈착한 후 '확인' 버튼을 눌러주세요.",
-          style: AppTextStyles.headingMedium,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 32),
-        GestureDetector(
-          onTap: () => setState(() => _step = _ExitStep.moving),
-          child: Container(
-            width: 200,
-            height: 60,
-            decoration: BoxDecoration(
-              color: AppColors.green,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            alignment: Alignment.center,
-            child: Text('확인', style: AppTextStyles.headingMedium),
-          ),
-        ),
-      ],
+    return DetachStepView(
+      onConfirmed: () => setState(() => _step = _ExitStep.moving),
     );
   }
 
   // ── 홈 위치 이동 ──
 
   Widget _buildMoving() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          '버튼을 누른 상태를 유지하여 암을\n홈 위치로 이동시켜 주세요.',
-          style: AppTextStyles.headingMedium,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 20),
-        const WarningBox(boxed: true),
-        const SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 60),
-          child: LongPressMoveButton(
-            isMoving: _isMoving,
-            onLongPress: () {
-              setState(() => _isMoving = true);
-              _simulateMovement();
-            },
-          ),
-        ),
-      ],
+    return MovingStepView(
+      isMoving: _isMoving,
+      onLongPress: () {
+        setState(() => _isMoving = true);
+        _simulateMovement();
+      },
     );
   }
 
@@ -158,25 +130,4 @@ class _ExitFlowState extends State<ExitFlow> {
     });
   }
 
-  // ── Helpers ──
-
-  Widget _whiteButton(String label, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 200,
-        height: 60,
-        decoration: BoxDecoration(
-          color: AppColors.cardWhite,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style:
-              AppTextStyles.headingMedium.copyWith(color: AppColors.textBlack),
-        ),
-      ),
-    );
-  }
 }
