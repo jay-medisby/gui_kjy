@@ -22,6 +22,7 @@ class SettingsModalBase extends StatelessWidget {
   final VoidCallback? onBack;
   final VoidCallback? onClose;
   final Widget child;
+  final Color? backgroundColor;
 
   const SettingsModalBase({
     super.key,
@@ -31,6 +32,7 @@ class SettingsModalBase extends StatelessWidget {
     this.showClose = true,
     this.onBack,
     this.onClose,
+    this.backgroundColor,
     required this.child,
   });
 
@@ -42,7 +44,7 @@ class SettingsModalBase extends StatelessWidget {
         width: AppDimensions.modalCardWidth,
         height: AppDimensions.modalCardHeight,
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.8),
+          color: backgroundColor ?? Colors.black.withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(AppDimensions.cardBorderRadius),
         ),
         child: Stack(

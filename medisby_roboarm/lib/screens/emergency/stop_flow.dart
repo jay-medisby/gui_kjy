@@ -140,7 +140,7 @@ class _StopFlowState extends State<StopFlow> {
                       const SizedBox(height: 12),
                       Text(
                         '1. 비상 정지의 원인을 제거해 주세요.',
-                        style: AppTextStyles.bodyMedium,
+                        style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
                       ),
                       const SizedBox(height: 8),
                       RichText(
@@ -148,7 +148,7 @@ class _StopFlowState extends State<StopFlow> {
                           children: [
                             TextSpan(
                               text: '2. 비상 정지 버튼을 ',
-                              style: AppTextStyles.bodyMedium,
+                              style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
                             ),
                             TextSpan(
                               text: '시계 방향으로 돌려',
@@ -159,7 +159,7 @@ class _StopFlowState extends State<StopFlow> {
                             ),
                             TextSpan(
                               text: ' 해제해 주세요.',
-                              style: AppTextStyles.bodyMedium,
+                              style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
                             ),
                           ],
                         ),
@@ -214,7 +214,7 @@ class _StopFlowState extends State<StopFlow> {
         _contentBox(
           Text(
             '부하 등 보호 정지의 원인을 제거한 후 재개 버튼을 눌러주세요.',
-            style: AppTextStyles.bodyMedium,
+            style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
           ),
         ),
         const Spacer(),
@@ -239,7 +239,7 @@ class _StopFlowState extends State<StopFlow> {
         _contentBox(
           Text(
             '복구를 진행하기 전에 구동장착부를 장비의 암에서 분리해 주세요.',
-            style: AppTextStyles.bodyMedium,
+            style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
           ),
         ),
         const SizedBox(height: 16),
@@ -263,7 +263,7 @@ class _StopFlowState extends State<StopFlow> {
                 const SizedBox(width: 12),
                 Text(
                   '구동장착부를 분리하였습니다.',
-                  style: AppTextStyles.bodyMedium,
+                  style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
                 ),
               ],
             ),
@@ -295,7 +295,7 @@ class _StopFlowState extends State<StopFlow> {
             '아래 버튼을 누르고 있는 동안 장비의 암이 홈 위치로 이동합니다.\n'
             '홈 위치로 이동하는 동안 장비의 암 주변에 장애물이 없도록 해주세요.\n'
             '필요시 장비를 이동시켜 주세요.',
-            style: AppTextStyles.bodyMedium,
+            style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
           ),
         ),
         const Spacer(),
@@ -346,7 +346,7 @@ class _StopFlowState extends State<StopFlow> {
         const SizedBox(height: 12),
         Text(
           '장비의 암이 홈 위치로 이동했습니다.\n정상적으로 사용을 재개할 수 있습니다.',
-          style: AppTextStyles.bodyMedium,
+          style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),

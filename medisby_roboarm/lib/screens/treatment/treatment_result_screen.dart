@@ -63,43 +63,17 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // 평균 속도
-              _resultCard(
-                '평균 속도',
-                const CircularProgress(
-                  value: 0.6,
-                  size: 160,
-                  activeColor: AppColors.background,
-                  hidePercent: true,
-                ),
-                '6',
-              ),
+              _resultCard('평균 속도', 0.6, '6'),
               const SizedBox(width: 16),
               // 치료 시간
-              _resultCard(
-                '치료 시간',
-                const CircularProgress(
-                  value: 1.0,
-                  size: 160,
-                  activeColor: AppColors.background,
-                  hidePercent: true,
-                ),
-                '00:30:30',
-              ),
+              _resultCard('치료 시간', 1.0, '00:30:30'),
               const SizedBox(width: 16),
               // 평균 부하도
-              _resultCard(
-                '평균 부하도',
-                const CircularProgress(
-                  value: 0.5,
-                  size: 160,
-                  activeColor: AppColors.background,
-                  hidePercent: true,
-                ),
-                '5',
-              ),
+              _resultCard('평균 부하도', 0.5, '5'),
             ],
           ),
         ),
+        const SizedBox(height: 16),
         Align(
           alignment: Alignment.centerRight,
           child: GestureDetector(
@@ -122,7 +96,8 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
     );
   }
 
-  Widget _resultCard(String title, Widget progress, String valueText) {
+  Widget _resultCard(String title, double progressValue, String valueText) {
+    final isTime = valueText.contains(':');
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -143,12 +118,17 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  progress,
+                  CircularProgress(
+                    value: progressValue,
+                    size: 160,
+                    activeColor: AppColors.background,
+                    hidePercent: true,
+                  ),
                   Text(
                     valueText,
                     style: AppTextStyles.headingLarge.copyWith(
                       color: AppColors.textBlack,
-                      fontSize: 36,
+                      fontSize: isTime ? 28 : 36,
                     ),
                   ),
                 ],
@@ -167,24 +147,27 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
   Widget _buildSeparateArm() {
     return Column(
       children: [
-        const SizedBox(height: 8),
         Text(
           '장비의 암과 상지 구동장착부 탈착',
           style:
               AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 24),
         Text(
           '장비의 암에 체결된 상지 구동장착부를 탈착해 주세요',
           style:
-              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
         Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: Container(
+          child: Center(
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 400,
+                  height: 280,
                   decoration: BoxDecoration(
                     color: AppColors.placeholderBg,
                     borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
@@ -194,13 +177,15 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
                       style: AppTextStyles.bodyLarge
                           .copyWith(color: AppColors.grayHighlight)),
                 ),
-              ),
-              const SizedBox(width: 12),
-              _videoButton('탈착 동영상'),
-            ],
+                Positioned(
+                  right: -116,
+                  top: 0,
+                  child: _videoButton('탈착 동영상'),
+                ),
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 12),
         Align(
           alignment: Alignment.centerRight,
           child: _greenButton('탈착 완료 →',
@@ -217,24 +202,27 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
   Widget _buildSeparateWear() {
     return Column(
       children: [
-        const SizedBox(height: 8),
         Text(
           '상지 구동장착부 착용 해제',
           style:
               AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 24),
         Text(
           '환자분으로부터 상지 구동장착부 착용을 해제해 주세요',
           style:
-              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
         Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: Container(
+          child: Center(
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 400,
+                  height: 280,
                   decoration: BoxDecoration(
                     color: AppColors.placeholderBg,
                     borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
@@ -244,13 +232,15 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
                       style: AppTextStyles.bodyLarge
                           .copyWith(color: AppColors.grayHighlight)),
                 ),
-              ),
-              const SizedBox(width: 12),
-              _videoButton('해제 동영상'),
-            ],
+                Positioned(
+                  right: -116,
+                  top: 0,
+                  child: _videoButton('해제 동영상'),
+                ),
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 12),
         Align(
           alignment: Alignment.centerRight,
           child: _greenButton('해제 완료 →',
@@ -353,8 +343,8 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
     return GestureDetector(
       onTap: () {},
       child: Container(
-        width: 80,
-        height: 80,
+        width: 100,
+        height: 100,
         decoration: BoxDecoration(
           color: AppColors.cardWhite,
           borderRadius: BorderRadius.circular(10),
@@ -363,11 +353,11 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.videocam, color: AppColors.green, size: 28),
-            const SizedBox(height: 4),
+            Icon(Icons.videocam, color: AppColors.green, size: 32),
+            const SizedBox(height: 6),
             Text(label,
                 style: AppTextStyles.captionLight.copyWith(
-                    color: AppColors.green, fontSize: 11),
+                    color: AppColors.green, fontSize: 14),
                 textAlign: TextAlign.center),
           ],
         ),

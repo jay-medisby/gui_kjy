@@ -30,15 +30,15 @@ class GaugeMeter extends StatelessWidget {
       child: CustomPaint(
         painter: _GaugePainter(value: value.clamp(0.0, 1.0)),
         child: Align(
-          alignment: const Alignment(0, 0.3),
+          alignment: const Alignment(0, 1.5),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 '${(value * 100).toInt()}',
                 style: AppTextStyles.headingLarge.copyWith(
-                  color: _valueColor,
-                  fontSize: size * 0.18,
+                  color: AppColors.textBlack,
+                  fontSize: 32,
                 ),
               ),
               if (unit != null)
@@ -46,7 +46,7 @@ class GaugeMeter extends StatelessWidget {
                   unit!,
                   style: AppTextStyles.caption.copyWith(
                     color: AppColors.textGray,
-                    fontSize: size * 0.08,
+                    fontSize: 16,
                   ),
                 ),
               if (label != null)
@@ -55,7 +55,7 @@ class GaugeMeter extends StatelessWidget {
                   child: Text(
                     label!,
                     style: AppTextStyles.captionLight.copyWith(
-                      fontSize: size * 0.07,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -65,25 +65,12 @@ class GaugeMeter extends StatelessWidget {
       ),
     );
   }
-
-  Color get _valueColor {
-    if (value < 0.5) return AppColors.green;
-    if (value < 0.75) return AppColors.gaugeYellow;
-    return AppColors.red;
-  }
 }
 
 class _GaugePainter extends CustomPainter {
   final double value;
 
   _GaugePainter({required this.value});
-
-  // 게이지 구간 색상 (Figma Treatment 섹션 색상 토큰 기반)
-  static const _segments = [
-    (0.0, 0.5, AppColors.green),          // 초록: 정상
-    (0.5, 0.75, AppColors.gaugeYellow),   // 노랑: 주의
-    (0.75, 1.0, AppColors.red),           // 빨강: 위험
-  ];
 
   static const double _startAngle = math.pi; // 180° (좌측 수평)
   static const double _sweepTotal = math.pi; // 180° (반원)
@@ -105,22 +92,28 @@ class _GaugePainter extends CustomPainter {
 
     canvas.drawArc(rect, _startAngle, _sweepTotal, false, bgPaint);
 
-    // ── 색상 구간별 호 그리기 ──
-    for (final (start, end, color) in _segments) {
-      final segStart = start.clamp(0.0, value);
-      final segEnd = end.clamp(0.0, value);
-      if (segEnd <= segStart) continue;
+    // ── 그라데이션 호 그리기 ──
+    if (value > 0) {
+      final sweepAngle = value * _sweepTotal;
 
-      final sweepStart = _startAngle + segStart * _sweepTotal;
-      final sweep = (segEnd - segStart) * _sweepTotal;
+      final gradient = SweepGradient(
+        startAngle: _startAngle,
+        endAngle: _startAngle + _sweepTotal,
+        colors: const [
+          AppColors.green,
+          AppColors.gaugeYellow,
+          AppColors.red,
+        ],
+        stops: const [0.0, 0.5, 1.0],
+      );
 
       final paint = Paint()
-        ..color = color
+        ..shader = gradient.createShader(rect)
         ..style = PaintingStyle.stroke
         ..strokeWidth = strokeWidth
         ..strokeCap = StrokeCap.round;
 
-      canvas.drawArc(rect, sweepStart, sweep, false, paint);
+      canvas.drawArc(rect, _startAngle, sweepAngle, false, paint);
     }
 
     // ── 니들 (현재 값 표시) ──

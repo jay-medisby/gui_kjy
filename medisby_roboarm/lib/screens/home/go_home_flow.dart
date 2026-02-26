@@ -128,7 +128,7 @@ class _GoHomeFlowState extends State<GoHomeFlow> {
         const SizedBox(height: 12),
         Text(
           '장비의 암이 홈 위치로 이동했습니다.\n정상적으로 사용을 재개할 수 있습니다.',
-          style: AppTextStyles.bodyMedium,
+          style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),

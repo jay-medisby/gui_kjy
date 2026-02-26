@@ -30,8 +30,8 @@ class AppDimensions {
   static const double buttonPaddingVertical = 10;
   static const double buttonPaddingHorizontal = 30;
   static const double menuButtonHeight = 44; // 메뉴 버튼 높이 (개별)
-  static const double navButtonWidth = 380;   // 녹색 네비게이션 버튼
-  static const double navButtonHeight = 55;
+  static const double navButtonWidth = 200;   // 녹색 네비게이션 버튼
+  static const double navButtonHeight = 50;
   static const double actionButtonWidth = 516;
   static const double actionButtonHeight = 91;
   static const double modalButtonWidth = 218;
@@ -45,7 +45,7 @@ class AppDimensions {
   // ── 아이콘 ──
   static const double iconSizeLarge = 42;
   static const double iconSizeMedium = 36;
-  static const double iconSizeDefault = 24;
+  static const double iconSizeDefault = 30;
   static const double iconSizeSmall = 20;
   static const double statusEllipseSize = 11;
 

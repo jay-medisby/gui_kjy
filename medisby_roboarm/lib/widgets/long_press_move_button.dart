@@ -12,11 +12,15 @@ class LongPressMoveButton extends StatelessWidget {
   /// 이동 중 상태 배경색 (기본: AppColors.green)
   final Color? movingColor;
 
+  /// 대기 상태 라벨 (기본: '길게 눌러서 홈 위치로 이동')
+  final String? label;
+
   const LongPressMoveButton({
     super.key,
     required this.isMoving,
     this.onLongPress,
     this.movingColor,
+    this.label,
   });
 
   @override
@@ -61,7 +65,7 @@ class LongPressMoveButton extends StatelessWidget {
             Icon(Icons.touch_app, color: AppColors.green, size: 28),
             const SizedBox(width: 12),
             Text(
-              '길게 눌러서 홈 위치로 이동',
+              label ?? '길게 눌러서 홈 위치로 이동',
               style: AppTextStyles.bodyLarge.copyWith(
                 color: AppColors.green,
               ),

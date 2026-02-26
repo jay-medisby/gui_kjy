@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/body_part.dart';
 import '../../theme/colors.dart';
@@ -8,7 +9,6 @@ import '../../widgets/content_card.dart';
 import '../../widgets/step_indicator.dart';
 import '../../widgets/confirm_dialog.dart';
 import '../../widgets/long_press_move_button.dart';
-import '../../widgets/warning_box.dart';
 import '../../widgets/trajectory_progress_bar.dart';
 
 /// 환자군 (3종)
@@ -399,69 +399,63 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           style:
               AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 24),
         // Body part badge + description
         RichText(
           textAlign: TextAlign.center,
           text: TextSpan(children: [
-            WidgetSpan(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.green,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  bp?.label ?? '',
-                  style: AppTextStyles.bodyLarge
-                      .copyWith(color: AppColors.textWhite),
-                ),
-              ),
+            TextSpan(
+              text: bp?.label ?? '',
+              style: AppTextStyles.bodyLarge
+                  .copyWith(color: AppColors.green, fontWeight: FontWeight.w700),
             ),
             TextSpan(
-              text: ' 치료를 위해 장비의 암을 구동장착부 준비 자세로 이동시켜 주세요.',
+              text: " 치료를 위해 '이동' 버튼을 눌러 장비의 암을 구동장착부 준비 자세로 이동시켜 주세요.",
               style:
-                  AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
+                  AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
             ),
           ]),
         ),
         const SizedBox(height: 12),
-        RichText(
+        Text(
+          "'이동' 버튼을 누르는 동안에만 장비의 암이 움직입니다.",
           textAlign: TextAlign.center,
-          text: TextSpan(children: [
-            TextSpan(
-              text: "'이동' 버튼을 누르는 동안 장비의 암이 ",
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
-            ),
-            TextSpan(
-              text: bp?.label ?? '',
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.green),
-            ),
-            TextSpan(
-              text: '의 ',
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
-            ),
-            TextSpan(
-              text: '$_entryDirection 진입',
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.green),
-            ),
-            TextSpan(
-              text: ' 방향으로 움직입니다.',
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
-            ),
-          ]),
+          style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textGreen, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 16),
-        // Warning
-        const WarningBox(),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: AppColors.warningBgLight,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: const Color(0xFFE65100)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.warning_amber_rounded,
+                  color: const Color(0xFFE65100), size: 20),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  '안전을 위해 장비의 암과 구동장착부를 체결하지 마시고, 장비 주변에 장애물이 없도록 해주세요.',
+                  style: AppTextStyles.bodyMedium
+                      .copyWith(color: const Color(0xFFE65100)),
+                ),
+              ),
+            ],
+          ),
+        ),
         const SizedBox(height: 16),
-        // Robot arm image
+        // Robot arm image — 버튼 영역과 겹쳐도 OK (중앙에 버튼 없음)
         Expanded(
-          child: Image.asset(
-            'assets/images/img_arm.png',
-            width: double.infinity,
-            fit: BoxFit.contain,
+          child: FractionallySizedBox(
+            heightFactor: 1.3,
+            alignment: Alignment.topCenter,
+            child: Image.asset(
+              'assets/images/img_arm.png',
+              fit: BoxFit.contain,
+            ),
           ),
         ),
       ],
@@ -473,6 +467,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
       width: 300,
       height: 70,
       child: LongPressMoveButton(
+        label: '이동',
         isMoving: _isMoving,
         onLongPress: () {
           setState(() => _isMoving = true);
@@ -540,10 +535,13 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                   2, '환자에 대해 수직이 되도록 손잡이를 잡고 장비를 정렬해 주세요'),
               const SizedBox(height: 12),
               Expanded(
-                child: Center(
-                  child: Image.asset(
-                    'assets/images/img_position_$_positionImageKey.png',
-                    fit: BoxFit.contain,
+                child: FractionallySizedBox(
+                  heightFactor: 0.90,
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/img_position_$_positionImageKey.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
@@ -571,11 +569,15 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
               const SizedBox(height: 8),
               _numberedText(
                   4, '필요에 따라 사용환경에 맞추어 추가적으로 위치를 조정해 주세요.'),
-              const Spacer(),
-              Center(
-                child: Image.asset(
-                  'assets/images/img_position_${_positionImageKey}2.png',
-                  fit: BoxFit.contain,
+              Expanded(
+                child: FractionallySizedBox(
+                  heightFactor: 0.90,
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/img_position_${_positionImageKey}2.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -597,11 +599,11 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           style:
               AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 24),
         Text(
           '바퀴 잠금장치를 밟아 장비를 고정해주세요',
           style:
-              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -609,27 +611,38 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // 두 앞바퀴 잠금
-              Column(
-                children: [
-                  _darkBadge('두 앞바퀴 잠금'),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: _imagePlaceholder(
-                        280, 200, Icons.lock, '앞바퀴 잠금'),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  children: [
+                    _darkBadge('두 앞바퀴 잠금'),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: FractionallySizedBox(
+                        heightFactor: 0.5,
+                        child: Image.asset(
+                          'assets/images/img_wheel_front.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 40),
               // 뒷바퀴 잠금
-              Column(
-                children: [
-                  _darkBadge('뒷바퀴 잠금'),
-                  const SizedBox(height: 12),
-                  Expanded(
-                    child: _imagePlaceholder(
-                        280, 200, Icons.lock, '뒷바퀴 잠금'),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  children: [
+                    _darkBadge('뒷바퀴 잠금'),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: Image.asset(
+                        'assets/images/img_wheel_rear.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -653,44 +666,25 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           style:
               AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 24),
         Text(
           isUpper
               ? '$limb 구동장착부를 환자의 전완부에 올바르게 착용시켜 주세요'
               : '$limb 구동장착부를 환자의 하퇴부에 올바르게 착용시켜 주세요',
           style:
-              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
         Expanded(
-          child: Row(
-            children: [
-              // 이전 이미지
-              Column(
-                children: [
-                  Expanded(
-                    child: _imagePlaceholder(
-                      180,
-                      200,
-                      isUpper
-                          ? Icons.back_hand
-                          : Icons.directions_walk,
-                      '이전 이미지',
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '이전 이미지',
-                    style: AppTextStyles.captionLight
-                        .copyWith(color: AppColors.textOrange),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 16),
-              // 착용 이미지 (placeholder)
-              Expanded(
-                child: Container(
+          child: Center(
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // 착용 이미지 (placeholder) — 중앙 정렬 기준
+                Container(
+                  width: 400,
+                  height: 280,
                   decoration: BoxDecoration(
                     color: AppColors.placeholderBg,
                     borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
@@ -702,11 +696,14 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                         .copyWith(color: AppColors.grayHighlight),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              // 착용 동영상 버튼
-              _videoButton('착용 동영상'),
-            ],
+                // 착용 동영상 버튼 — 우측 상단
+                Positioned(
+                  right: -116,
+                  top: 0,
+                  child: _videoButton('착용 동영상'),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -727,38 +724,58 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           style:
               AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 24),
         Text(
-          '왼쪽 발판을 밟은 상태에서 장비의 암을 이동시켜\n장비의 암과 $limb 구동장착부를 체결해 주세요',
+          '왼쪽 발판을 밟은 상태에서 장비의 암을 이동시켜 장비의 암과 $limb 구동장착부를 체결해 주세요',
           style:
-              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
         Expanded(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // 발판 이미지
-              Expanded(
-                child: _imagePlaceholder(
-                    260, 200, Icons.gamepad, '발판'),
+              Image.asset(
+                'assets/images/img_stepper_ver1_text.png',
+                height: 150,
+                fit: BoxFit.contain,
               ),
-              const SizedBox(width: 16),
-              // 체결 이미지
-              Expanded(
-                child: _imagePlaceholder(
-                    260, 200, Icons.handyman, '체결'),
+              const SizedBox(width: 40),
+              // 체결 이미지 + 동영상 버튼
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 400,
+                    height: 280,
+                    decoration: BoxDecoration(
+                      color: AppColors.placeholderBg,
+                      borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '체결 이미지',
+                      style: AppTextStyles.bodyLarge
+                          .copyWith(color: AppColors.grayHighlight),
+                    ),
+                  ),
+                  Positioned(
+                    right: -116,
+                    top: 0,
+                    child: _videoButton('체결 동영상'),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              _videoButton('체결 동영상'),
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 24),
         Text(
           '체결이 완료되면 오른쪽 발판을 밟거나 다음 버튼을 눌러주세요',
           style:
-              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
           textAlign: TextAlign.center,
         ),
       ],
@@ -770,83 +787,94 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
   // ──────────────────────────────────────────
 
   Widget _buildStep8StartPosition() {
-    return Row(
+    return Stack(
       children: [
-        // Left: 시작 자세 입력
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.contentBgGreen,
-              borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Text(
-                    '시작 자세 입력',
-                    style: AppTextStyles.headingMedium
-                        .copyWith(color: AppColors.textBlack),
-                  ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Left: 시작 자세 입력
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.contentBgGreen,
+                  borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
                 ),
-                const SizedBox(height: 12),
-                RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                      text: '왼쪽 발판을 밟은 상태',
-                      style: AppTextStyles.bodyLarge
-                          .copyWith(color: AppColors.green),
-                    ),
-                    TextSpan(
-                      text: '에서\n장비의 암을 이동시켜\n시작 자세로 이동해 주세요',
-                      style: AppTextStyles.bodyMedium
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      '시작 자세 입력',
+                      style: AppTextStyles.headingMedium
                           .copyWith(color: AppColors.textBlack),
                     ),
-                  ]),
+                    const SizedBox(height: 20),
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(children: [
+                        TextSpan(
+                          text: '왼쪽 발판을 밟은 상태',
+                          style: AppTextStyles.bodyLarge
+                              .copyWith(color: AppColors.green),
+                        ),
+                        TextSpan(
+                          text: '에서 장비의 암을 이동시켜\n시작 자세로 이동해 주세요',
+                          style: AppTextStyles.bodyMedium
+                              .copyWith(color: AppColors.textBlack, fontSize: 20),
+                        ),
+                      ]),
+                    ),
+                    const SizedBox(height: 20),
+                    _bulletText('왼쪽 발판을 떼면 이동이 중단됩니다.'),
+                    const SizedBox(height: 8),
+                    _bulletText('필요시 왼쪽 발판을 다시 밟아 이동을 이어가 주세요.'),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                _bulletText('왼쪽 발판을 떼면 이동이 중단됩니다.'),
-                const SizedBox(height: 8),
-                _bulletText('필요시 왼쪽 발판을 다시 밟아 이동을 이어가 주세요'),
-                const Spacer(),
-                Center(
-                  child: _imagePlaceholder(
-                      280, 100, Icons.gamepad, '발판'),
-                ),
-              ],
+              ),
             ),
-          ),
+            // Divider
+            Container(
+                width: 1,
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                color: AppColors.divider),
+            // Right: 시작 자세 입력 완료
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.contentBgGray,
+                  borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: Column(
+                  children: [
+                    Text(
+                      '시작 자세 입력 완료',
+                      style: AppTextStyles.headingMedium
+                          .copyWith(color: AppColors.textBlack),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      '오른쪽 발판을 밟거나\n\'다음\' 버튼을 눌러주세요',
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(color: AppColors.textBlack, fontSize: 20),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
-        // Divider
-        Container(
-            width: 1,
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            color: AppColors.divider),
-        // Right: 시작 자세 입력 완료
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.contentBgGray,
-              borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Text(
-                  '시작 자세 입력 완료',
-                  style: AppTextStyles.headingMedium
-                      .copyWith(color: AppColors.textBlack),
-                ),
-                const Spacer(),
-                Text(
-                  '오른쪽 발판을 밟거나\n\'다음\' 버튼을 눌러주세요',
-                  style: AppTextStyles.bodyLarge
-                      .copyWith(color: AppColors.green),
-                  textAlign: TextAlign.center,
-                ),
-                const Spacer(),
-              ],
+        // 발판 이미지 — 중앙 하단, 양쪽 패널에 걸침
+        Positioned(
+          bottom: 5,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Image.asset(
+              'assets/images/img_stepper_ver1_text.png',
+              height: 180,
+              fit: BoxFit.contain,
             ),
           ),
         ),
@@ -862,6 +890,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
     return Stack(
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Left: 궤적 입력
             Expanded(
@@ -870,19 +899,18 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                   color: AppColors.contentBgGreen,
                   borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
                 ),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Center(
-                      child: Text(
-                        '궤적 입력',
-                        style: AppTextStyles.headingMedium
-                            .copyWith(color: AppColors.textBlack),
-                      ),
+                    Text(
+                      '궤적 입력',
+                      style: AppTextStyles.headingMedium
+                          .copyWith(color: AppColors.textBlack),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 20),
                     RichText(
+                      textAlign: TextAlign.center,
                       text: TextSpan(children: [
                         TextSpan(
                           text: '왼쪽 발판을 밟은 상태',
@@ -890,9 +918,9 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                               .copyWith(color: AppColors.green),
                         ),
                         TextSpan(
-                          text: '에서\n장비의 암을 이동시켜\n궤적을 ',
+                          text: '에서 장비의 암을 이동시켜\n궤적을 ',
                           style: AppTextStyles.bodyMedium
-                              .copyWith(color: AppColors.textBlack),
+                              .copyWith(color: AppColors.textBlack, fontSize: 20),
                         ),
                         TextSpan(
                           text: '한 방향으로만',
@@ -902,7 +930,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                         TextSpan(
                           text: ' 기록해주세요',
                           style: AppTextStyles.bodyMedium
-                              .copyWith(color: AppColors.textBlack),
+                              .copyWith(color: AppColors.textBlack, fontSize: 20),
                         ),
                       ]),
                     ),
@@ -913,23 +941,22 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                           setState(() => _showTooltip = !_showTooltip),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                            horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: AppColors.warningBgLight,
+                          color: const Color(0xFFD4EDDA),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                              color: AppColors.warningYellow),
+                          border: Border.all(color: AppColors.green),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.lightbulb,
-                                color: AppColors.warningAmber, size: 18),
-                            const SizedBox(width: 4),
+                                color: AppColors.green, size: 20),
+                            const SizedBox(width: 6),
                             Text(
                               '한 방향 궤적이란?',
-                              style: AppTextStyles.caption.copyWith(
-                                  color: AppColors.warningOrangeDark),
+                              style: AppTextStyles.caption
+                                  .copyWith(color: AppColors.green, fontSize: 18),
                             ),
                           ],
                         ),
@@ -938,12 +965,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                     const SizedBox(height: 12),
                     _bulletText('왼쪽 발판을 떼면 이동이 중단됩니다.'),
                     const SizedBox(height: 8),
-                    _bulletText('필요시 왼쪽 발판을 다시 밟아 기록을 이어가 주세요'),
-                    const Spacer(),
-                    Center(
-                      child: _imagePlaceholder(
-                          280, 100, Icons.gamepad, '발판'),
-                    ),
+                    _bulletText('필요시 왼쪽 발판을 다시 밟아 기록을 이어가 주세요.'),
                   ],
                 ),
               ),
@@ -959,7 +981,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                   color: AppColors.contentBgGray,
                   borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
                 ),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                 child: Column(
                   children: [
                     Text(
@@ -967,54 +989,84 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                       style: AppTextStyles.headingMedium
                           .copyWith(color: AppColors.textBlack),
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 20),
                     Text(
                       '오른쪽 발판을 밟거나\n\'다음\' 버튼을 눌러주세요',
-                      style: AppTextStyles.bodyLarge
-                          .copyWith(color: AppColors.green),
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(color: AppColors.textBlack, fontSize: 20),
                       textAlign: TextAlign.center,
                     ),
-                    const Spacer(),
                   ],
                 ),
               ),
             ),
           ],
         ),
+        // 발판 이미지 — 중앙 하단, 양쪽 패널에 걸침
+        Positioned(
+          bottom: 5,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: Image.asset(
+              'assets/images/img_stepper_ver1_text.png',
+              height: 180,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
         // Tooltip popup
         if (_showTooltip)
           Positioned(
             left: 24,
-            top: 200,
-            child: Container(
-              width: 400,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.darkGray,
-                borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                          text: '시작점에서 끝점까지의 이동',
-                          style: AppTextStyles.bodyLarge
-                              .copyWith(color: AppColors.textWhite),
-                        ),
-                        TextSpan(
-                          text: '입니다.\n돌아오는 궤적은 기록하지 마세요.',
-                          style: AppTextStyles.bodyMedium
-                              .copyWith(color: AppColors.textWhite),
-                        ),
-                      ]),
-                    ),
+            top: 190,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 삼각형 화살표 (버튼 방향)
+                Transform.translate(
+                  offset: const Offset(0, 1),
+                  child: CustomPaint(
+                    size: const Size(20, 10),
+                    painter: _TrianglePainter(color: AppColors.darkGray),
                   ),
-                  const SizedBox(width: 12),
-                  Icon(Icons.swap_horiz, color: AppColors.green, size: 48),
-                ],
-              ),
+                ),
+                // 팝업 본체
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkGray,
+                    borderRadius: BorderRadius.circular(
+                        AppDimensions.mediumBorderRadius),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RichText(
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text: '시작점에서 끝점까지의 이동',
+                            style: AppTextStyles.bodyLarge
+                                .copyWith(color: AppColors.textWhite),
+                          ),
+                          TextSpan(
+                            text: '입니다.\n돌아오는 궤적은 기록하지 마세요.',
+                            style: AppTextStyles.bodyMedium
+                                .copyWith(color: AppColors.textWhite),
+                          ),
+                        ]),
+                      ),
+                      const SizedBox(width: 8),
+                      Image.asset(
+                        'assets/images/img_oneway.png',
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.contain,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
       ],
@@ -1033,14 +1085,14 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           style:
               AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 24),
         Text(
-          '장비의 암이 입력한 궤적을 따라 이동합니다\n입력한 궤적을 확인해 주세요',
+          '장비의 암이 입력한 궤적을 따라 이동합니다.\n입력한 궤적을 확인해 주세요.',
           style:
-              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+              AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 32),
         // Trajectory progress bar
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -1048,14 +1100,17 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         ),
         const Spacer(),
         // Speed control + pause
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.divider),
-            borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
-          ),
-          child: Row(
-            children: [
+        Center(
+          child: Container(
+            width: 720,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            decoration: BoxDecoration(
+              color: AppColors.contentBgGray,
+              border: Border.all(color: AppColors.divider),
+              borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
+            ),
+            child: Row(
+              children: [
               Text(
                 '속도 조절',
                 style: AppTextStyles.bodyLarge
@@ -1071,7 +1126,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   '$_verifySpeed',
-                  style: AppTextStyles.headingLarge
+                  style: AppTextStyles.titleLarge
                       .copyWith(color: AppColors.textBlack),
                 ),
               ),
@@ -1080,14 +1135,14 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                   setState(() => _verifySpeed++);
                 }
               }),
-              const SizedBox(width: 32),
+              const SizedBox(width: 120),
               GestureDetector(
                 onTap: () => setState(() => _isPaused = !_isPaused),
                 child: Container(
-                  width: 120,
+                  width: 150,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: AppColors.settingsCardBg,
+                    color: _isPaused ? AppColors.blue : AppColors.settingsCardBg,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   alignment: Alignment.center,
@@ -1101,6 +1156,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
             ],
           ),
         ),
+        ),
+        const SizedBox(height: 70),
       ],
     );
   }
@@ -1153,7 +1210,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                     const SizedBox(height: 8),
                     Text(
                       '$_treatmentSpeed',
-                      style: AppTextStyles.displayLarge
+                      style: AppTextStyles.headingLarge
                           .copyWith(color: AppColors.textBlack),
                     ),
                     const SizedBox(height: 8),
@@ -1195,7 +1252,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                     const SizedBox(height: 12),
                     Text(
                       timeStr,
-                      style: AppTextStyles.displayLarge
+                      style: AppTextStyles.headingLarge
                           .copyWith(color: AppColors.textBlack),
                     ),
                     const SizedBox(height: 12),
@@ -1293,7 +1350,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                 '정지 사유가 해소되면 ',
                 'START',
                 ' 버튼을 눌러 장비의 작동을 재개시킬 수 있습니다.',
-                AppColors.green,
+                AppColors.blueDeep,
               ),
             ],
           ),
@@ -1301,8 +1358,11 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         const Spacer(),
         // Hand switch image
         Center(
-          child: _imagePlaceholder(
-              200, 180, Icons.radio_button_on, 'START/STOP'),
+          child: Image.asset(
+            'assets/images/img_handswitch.png',
+            height: 260,
+            fit: BoxFit.contain,
+          ),
         ),
       ],
     );
@@ -1342,33 +1402,6 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
   // Shared Helpers
   // ════════════════════════════════════════════
 
-  Widget _imagePlaceholder(double w, double h, IconData icon,
-      [String? label]) {
-    return Container(
-      width: w,
-      height: h,
-      decoration: BoxDecoration(
-        color: AppColors.contentBgGray,
-        borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 48, color: AppColors.grayHighlight),
-          if (label != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: AppTextStyles.captionLight
-                  .copyWith(color: AppColors.grayHighlight, fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
   Widget _darkBadge(String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -1398,8 +1431,8 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         // TODO: open video
       },
       child: Container(
-        width: 80,
-        height: 80,
+        width: 100,
+        height: 100,
         decoration: BoxDecoration(
           color: AppColors.cardWhite,
           borderRadius: BorderRadius.circular(10),
@@ -1408,13 +1441,13 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.videocam, color: AppColors.green, size: 28),
-            const SizedBox(height: 4),
+            Icon(Icons.videocam, color: AppColors.green, size: 32),
+            const SizedBox(height: 6),
             Text(
               label,
               style: AppTextStyles.captionLight.copyWith(
                 color: AppColors.green,
-                fontSize: 11,
+                fontSize: 14,
               ),
               textAlign: TextAlign.center,
             ),
@@ -1500,16 +1533,16 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          ' \u2022  ',
-          style:
-              AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
+        Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Icon(Icons.tips_and_updates, color: AppColors.textGray, size: 20),
         ),
+        const SizedBox(width: 6),
         Expanded(
           child: Text(
             text,
             style:
-                AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
+                AppTextStyles.captionLight.copyWith(color: AppColors.textGray, fontSize: 18),
           ),
         ),
       ],
@@ -1529,7 +1562,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           child: Text(
             text,
             style:
-                AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack),
+                AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
           ),
         ),
       ],
@@ -1552,7 +1585,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
               TextSpan(
                 text: before,
                 style: AppTextStyles.bodyMedium
-                    .copyWith(color: AppColors.textBlack),
+                    .copyWith(color: AppColors.textBlack, fontSize: 20),
               ),
               TextSpan(
                 text: bold,
@@ -1561,7 +1594,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
               TextSpan(
                 text: after,
                 style: AppTextStyles.bodyMedium
-                    .copyWith(color: AppColors.textBlack),
+                    .copyWith(color: AppColors.textBlack, fontSize: 20),
               ),
             ]),
           ),
@@ -1569,4 +1602,23 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
       ],
     );
   }
+}
+
+class _TrianglePainter extends CustomPainter {
+  final Color color;
+  _TrianglePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final path = Path()
+      ..moveTo(size.width / 2, 0)
+      ..lineTo(0, size.height)
+      ..lineTo(size.width, size.height)
+      ..close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

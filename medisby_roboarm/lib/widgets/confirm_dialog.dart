@@ -143,7 +143,7 @@ class ConfirmDialog extends StatelessWidget {
         AppButton(
           label: confirmLabel,
           variant: confirmVariant,
-          size: ButtonSize.medium,
+          size: ButtonSize.dialog,
           onPressed: onConfirm ?? () => Navigator.of(context).pop(true),
         ),
       ],

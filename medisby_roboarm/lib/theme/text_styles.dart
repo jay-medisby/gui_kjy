@@ -57,9 +57,9 @@ class AppTextStyles {
         color: AppColors.textWhite,
       );
 
-  // ── Body: 메뉴/상태 텍스트 (18px) ──
+  // ── Body: 메뉴/상태 텍스트 (20px) ──
   static TextStyle get bodyLarge => GoogleFonts.notoSansKr(
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: FontWeight.w700,
         height: 1.2,
         color: AppColors.textWhite,

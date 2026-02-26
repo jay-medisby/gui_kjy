@@ -9,10 +9,9 @@ import 'screens/home/go_home_flow.dart';
 import 'screens/settings/settings_flow.dart';
 import 'screens/pre_treatment/pre_treatment_flow.dart';
 import 'screens/treatment/treatment_dashboard.dart';
-import 'screens/treatment/trajectory_add_flow.dart';
 import 'screens/treatment/treatment_result_screen.dart';
 import 'screens/exit/exit_flow.dart';
-import 'preview/previews.dart';
+import 'screens/dev/dev_catalog_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -50,10 +49,6 @@ final GoRouter appRouter = GoRouter(
           path: '/treatment',
           builder: (context, state) => const TreatmentDashboard(),
           routes: [
-            GoRoute(
-              path: 'trajectory-add',
-              builder: (context, state) => const TrajectoryAddFlow(),
-            ),
             GoRoute(
               path: 'result',
               builder: (context, state) => const TreatmentResultScreen(),

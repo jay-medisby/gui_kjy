@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/colors.dart';
 import '../../theme/text_styles.dart';
@@ -34,7 +35,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Stack(
+      children: [
+        // ── Dev Catalog 버튼 (우측 상단) ──
+        Positioned(
+          top: 3,
+          right: 35,
+          child: Material(
+            color: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(20),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => context.go('/dev'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.developer_mode, color: Colors.white70, size: 16),
+                    const SizedBox(width: 6),
+                    Text('Go to Dev Catalog',
+                        style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        // ── 메인 콘텐츠 ──
+        Padding(
       // Figma: contentsaria x=261(→31 from sidebar), y=123, 984×549
       padding: const EdgeInsets.fromLTRB(31, 123, 35, 19),
       child: ContentCard(
@@ -70,6 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    ),
+      ],
     );
   }
 

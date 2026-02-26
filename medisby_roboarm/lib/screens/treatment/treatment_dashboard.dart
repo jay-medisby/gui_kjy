@@ -7,6 +7,7 @@ import '../../widgets/content_card.dart';
 import '../../widgets/gauge_meter.dart';
 import '../../widgets/trajectory_progress_bar.dart';
 import '../../widgets/confirm_dialog.dart';
+import 'trajectory_add_flow.dart';
 
 class TreatmentDashboard extends StatefulWidget {
   const TreatmentDashboard({super.key});
@@ -20,6 +21,8 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
   int _remainingSeconds = 28 * 60 + 39; // 28:39 demo
   final double _loadValue = 0.60; // 부하도 60%
   final double _trajectoryProgress = 0.45; // 궤적 내 위치
+  bool _hasAddedTrajectory = false;
+  double _seg1Ratio = 0.5; // 1번 궤적이 전체에서 차지하는 비율 (동적, 데모 0.5)
 
   // ════════════════════════════════════════════
   // Build
@@ -35,13 +38,13 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
           children: [
             // ── Header: title + pause ──
             _buildHeader(),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             // ── Main controls ──
-            Expanded(child: _buildControls()),
-            const SizedBox(height: 8),
+            SizedBox(height: 260, child: _buildControls()),
+            const SizedBox(height: 16),
             // ── Trajectory bar ──
             _buildTrajectorySection(),
-            const SizedBox(height: 8),
+            const Spacer(),
             // ── Bottom buttons ──
             _buildBottomButtons(),
           ],
@@ -53,27 +56,34 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
   // ── Header ──
 
   Widget _buildHeader() {
-    return Row(
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.center,
       children: [
-        const Spacer(),
-        Text(
-          '치료 중',
-          style:
-              AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
+        Center(
+          child: Text(
+            '치료 중',
+            style:
+                AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
+          ),
         ),
-        const Spacer(),
-        GestureDetector(
-          onTap: _showPauseOverlay,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            decoration: BoxDecoration(
-              color: AppColors.settingsCardBg,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: Text(
-              '일시정지',
-              style: AppTextStyles.bodyLarge
-                  .copyWith(color: AppColors.textWhite),
+        Positioned(
+          right: 0,
+          child: GestureDetector(
+            onTap: _showPauseOverlay,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              width: 160,
+              decoration: BoxDecoration(
+                color: AppColors.settingsCardBg,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                '일시정지',
+                style: AppTextStyles.bodyLarge
+                    .copyWith(color: AppColors.textWhite),
+              ),
             ),
           ),
         ),
@@ -92,6 +102,7 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
         '${hours.toString().padLeft(2, '0')}:${displayMins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // 속도
         Expanded(
@@ -102,8 +113,9 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
               borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                const SizedBox(height: 8),
                 Text('속도',
                     style: AppTextStyles.titleLarge
                         .copyWith(color: AppColors.textBlack)),
@@ -113,7 +125,7 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
                 }),
                 const SizedBox(height: 8),
                 Text('$_speed',
-                    style: AppTextStyles.displayLarge
+                    style: AppTextStyles.headingLarge
                         .copyWith(color: AppColors.textBlack)),
                 const SizedBox(height: 8),
                 _arrowButton(Icons.keyboard_arrow_down, () {
@@ -134,13 +146,16 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
               borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                const SizedBox(height: 8),
                 Text('부하도',
                     style: AppTextStyles.titleLarge
                         .copyWith(color: AppColors.textBlack)),
-                const SizedBox(height: 8),
-                GaugeMeter(value: _loadValue, size: 220),
+                Transform.translate(
+                  offset: const Offset(0, -20),
+                  child: GaugeMeter(value: _loadValue, size: 240),
+                ),
               ],
             ),
           ),
@@ -155,12 +170,13 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
               borderRadius: BorderRadius.circular(AppDimensions.mediumBorderRadius),
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                const SizedBox(height: 8),
                 Text('남은 시간',
                     style: AppTextStyles.titleLarge
                         .copyWith(color: AppColors.textBlack)),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -199,10 +215,36 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
             style:
                 AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack)),
         const SizedBox(height: 8),
-        TrajectoryProgressBar(
-          value: _trajectoryProgress,
-          endLabel: '궤적 끝',
-        ),
+        _hasAddedTrajectory
+            ? TrajectoryProgressBar(
+                value: _trajectoryProgress * _seg1Ratio, // 전체 궤적 기준 재계산
+                startLabel: '궤적 시작',
+                endLabel: '',
+                bookmarks: [
+                  TrajectoryBookmark(
+                    position: _seg1Ratio,
+                    isActive: false,
+                    label: '1번 궤적 끝',
+                  ),
+                  TrajectoryBookmark(
+                    position: 1.0,
+                    isActive: true,
+                    label: '2번 궤적 끝',
+                  ),
+                ],
+              )
+            : TrajectoryProgressBar(
+                value: _trajectoryProgress,
+                startLabel: '궤적 시작',
+                endLabel: '',
+                bookmarks: [
+                  TrajectoryBookmark(
+                    position: 1.0,
+                    isActive: true,
+                    label: '궤적 끝',
+                  ),
+                ],
+              ),
       ],
     );
   }
@@ -327,23 +369,12 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
     );
   }
 
-  /// 궤적 추가 확인
-  void _showTrajectoryAddConfirm() {
-    showDialog(
-      context: context,
-      barrierColor: Colors.transparent,
-      barrierDismissible: false,
-      builder: (ctx) => ConfirmDialog(
-        title: '궤적을 추가하시겠습니까?',
-        cancelLabel: '아니오',
-        confirmLabel: '예',
-        onCancel: () => Navigator.of(ctx).pop(),
-        onConfirm: () {
-          Navigator.of(ctx).pop();
-          context.go('/treatment/trajectory-add');
-        },
-      ),
-    );
+  /// 궤적 추가 플로우
+  void _showTrajectoryAddConfirm() async {
+    final result = await TrajectoryAddFlow.show(context);
+    if (result == true && mounted) {
+      setState(() => _hasAddedTrajectory = true);
+    }
   }
 
 }
