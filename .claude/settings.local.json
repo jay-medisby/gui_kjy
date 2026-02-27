@@ -19,7 +19,17 @@
       "Bash(git checkout -- lib/screens/pre_treatment/pre_treatment_flow.dart)",
       "WebFetch(domain:api.flutter.dev)",
       "Bash(find /c/Users/HP/Desktop/github/gui_kjy/medisby_roboarm/lib -type f -name \"*.dart\" -exec wc -l {} +)",
-      "Bash(sort -k2)"
+      "Bash(sort -k2)",
+      "Bash(git init)",
+      "Bash(git add -A)",
+      "Bash(git commit -m \"Deploy Flutter Web to GitHub Pages\")",
+      "Bash(git push -f https://github.com/jay-medisby/gui_kjy.git master:gh-pages)",
+      "Bash(gh api repos/jay-medisby/gui_kjy/pages -X POST -f \"source[branch]=gh-pages\" -f \"source[path]=/\")",
+      "Bash(gh repo view jay-medisby/gui_kjy --json visibility -q '.visibility')",
+      "Bash(gh repo edit jay-medisby/gui_kjy --visibility public)",
+      "Bash(gh repo edit jay-medisby/gui_kjy --visibility public --accept-visibility-change-consequences)",
+      "Bash(gh api repos/jay-medisby/gui_kjy/pages -q '.status // \"\"deploying\"\"')",
+      "Bash(gh api repos/jay-medisby/gui_kjy/pages -q '.status')"
     ]
   }
 }
