@@ -17,7 +17,9 @@
       "Bash(grep:*)",
       "Bash(flutter:*)",
       "Bash(git checkout -- lib/screens/pre_treatment/pre_treatment_flow.dart)",
-      "WebFetch(domain:api.flutter.dev)"
+      "WebFetch(domain:api.flutter.dev)",
+      "Bash(find /c/Users/HP/Desktop/github/gui_kjy/medisby_roboarm/lib -type f -name \"*.dart\" -exec wc -l {} +)",
+      "Bash(sort -k2)"
     ]
   }
 }
