@@ -5,6 +5,7 @@ import '../../theme/dimensions.dart';
 import '../../widgets/app_button.dart';
 import '../../widgets/modal_overlay.dart';
 import '../../widgets/long_press_move_button.dart';
+import '../../widgets/warning_box.dart';
 
 /// 비상정지 / 보호정지 타입
 enum StopType { emergency, safe }
@@ -41,7 +42,6 @@ class StopFlow extends StatefulWidget {
 class _StopFlowState extends State<StopFlow> {
   _StopStep _step = _StopStep.step1;
   bool _separated = false;
-  bool _isMoving = false;
 
   // ── 타입별 색상/텍스트 ──
   bool get isEmergency => widget.type == StopType.emergency;
@@ -68,7 +68,6 @@ class _StopFlowState extends State<StopFlow> {
           color: bgColor,
           borderRadius:
               BorderRadius.circular(AppDimensions.cardBorderRadius),
-          border: Border.all(color: accentColor, width: 2),
         ),
         child: Column(
           children: [
@@ -124,78 +123,66 @@ class _StopFlowState extends State<StopFlow> {
       children: [
         _stepHeader(1, '원인 확인 및 해제'),
         const SizedBox(height: 16),
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(
-                child: _contentBox(
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '다음 절차를 수행하세요:',
-                        style: AppTextStyles.bodyLarge,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        '1. 비상 정지의 원인을 제거해 주세요.',
-                        style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
-                      ),
-                      const SizedBox(height: 8),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: '2. 비상 정지 버튼을 ',
-                              style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
+        Row(
+          children: [
+            Expanded(
+              child: _contentBox(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '다음 절차를 수행해 주세요:',
+                      style: AppTextStyles.titleSmall,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      '1. 비상 정지의 원인을 제거해 주세요.',
+                      style: AppTextStyles.bodyMedium.copyWith(fontSize: 24),
+                    ),
+                    const SizedBox(height: 8),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '2. 비상 정지 버튼을 ',
+                            style: AppTextStyles.bodyMedium.copyWith(fontSize: 24),
+                          ),
+                          TextSpan(
+                            text: '시계 방향으로 돌려',
+                            style: AppTextStyles.titleSmall.copyWith(
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppColors.textWhite,
                             ),
-                            TextSpan(
-                              text: '시계 방향으로 돌려',
-                              style: AppTextStyles.bodyLarge.copyWith(
-                                decoration: TextDecoration.underline,
-                                decorationColor: AppColors.textWhite,
-                              ),
-                            ),
-                            TextSpan(
-                              text: ' 해제해 주세요.',
-                              style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
-                            ),
-                          ],
-                        ),
+                          ),
+                          TextSpan(
+                            text: ' 해제해 주세요.',
+                            style: AppTextStyles.bodyMedium.copyWith(fontSize: 24),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 16),
-              // 비상 정지 버튼 이미지 placeholder
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('비상 정지 버튼',
-                      style: AppTextStyles.bodyMedium),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: AppColors.emergencyAccent.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    alignment: Alignment.center,
-                    child: Icon(
-                      Icons.emergency,
-                      color: AppColors.emergencyAccent,
-                      size: 64,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 16),
+            // 비상 정지 버튼 이미지
+            Column(
+              children: [
+                Text('비상 정지 버튼',
+                    style: AppTextStyles.bodyMedium),
+                const SizedBox(height: 8),
+                Image.asset(
+                  'assets/images/img_ems.png',
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
+        const Spacer(),
         _actionButton(
           '다음 단계로',
           () => setState(() => _step = _StopStep.step2),
@@ -214,7 +201,7 @@ class _StopFlowState extends State<StopFlow> {
         _contentBox(
           Text(
             '부하 등 보호 정지의 원인을 제거한 후 재개 버튼을 눌러주세요.',
-            style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
+            style: AppTextStyles.bodyMedium.copyWith(fontSize: 24),
           ),
         ),
         const Spacer(),
@@ -239,7 +226,7 @@ class _StopFlowState extends State<StopFlow> {
         _contentBox(
           Text(
             '복구를 진행하기 전에 구동장착부를 장비의 암에서 분리해 주세요.',
-            style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
+            style: AppTextStyles.bodyMedium.copyWith(fontSize: 24),
           ),
         ),
         const SizedBox(height: 16),
@@ -263,7 +250,7 @@ class _StopFlowState extends State<StopFlow> {
                 const SizedBox(width: 12),
                 Text(
                   '구동장착부를 분리하였습니다.',
-                  style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
+                  style: AppTextStyles.bodyMedium.copyWith(fontSize: 24),
                 ),
               ],
             ),
@@ -292,28 +279,36 @@ class _StopFlowState extends State<StopFlow> {
         const SizedBox(height: 16),
         _contentBox(
           Text(
-            '아래 버튼을 누르고 있는 동안 장비의 암이 홈 위치로 이동합니다.\n'
-            '홈 위치로 이동하는 동안 장비의 암 주변에 장애물이 없도록 해주세요.\n'
-            '필요시 장비를 이동시켜 주세요.',
-            style: AppTextStyles.bodyMedium.copyWith(fontSize: 20),
+            '버튼을 누른 상태를 유지하여 암을 홈 위치로 이동시켜 주세요.',
+            style: AppTextStyles.bodyMedium.copyWith(fontSize: 24),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 200),
+          child: WarningBox(
+            borderColor: accentColor,
+            iconColor: accentColor,
+            textColor: accentColor,
+            fontSize: 18,
           ),
         ),
         const Spacer(),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 60),
+          padding: const EdgeInsets.symmetric(horizontal: 200),
           child: LongPressMoveButton(
-            isMoving: _isMoving,
+            idleColor: accentColor,
             movingColor: accentColor,
-            onLongPress: () {
-              setState(() => _isMoving = true);
-              _simulateMovement();
+            onComplete: () {
+              setState(() => _step = _StopStep.step4);
             },
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          '버튼에서 손을 떼면 이동이 중단됩니다',
-          style: AppTextStyles.captionLight,
+          '이동을 멈추려면 즉시 버튼에서 손을 떼주세요',
+          style: AppTextStyles.captionLight
+              .copyWith(color: Colors.white),
         ),
         const SizedBox(height: 16),
       ],
@@ -361,20 +356,6 @@ class _StopFlowState extends State<StopFlow> {
   }
 
   // ════════════════════════════════════════════
-  // Movement simulation
-  // ════════════════════════════════════════════
-
-  void _simulateMovement() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      setState(() {
-        _isMoving = false;
-        _step = _StopStep.step4;
-      });
-    });
-  }
-
-  // ════════════════════════════════════════════
   // Shared helpers
   // ════════════════════════════════════════════
 
@@ -396,7 +377,7 @@ class _StopFlowState extends State<StopFlow> {
           ),
         ),
         const SizedBox(width: 8),
-        Text(label, style: AppTextStyles.bodyLarge),
+        Text(label, style: AppTextStyles.titleLarge),
       ],
     );
   }

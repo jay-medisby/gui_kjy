@@ -32,7 +32,6 @@ class ExitFlow extends StatefulWidget {
 
 class _ExitFlowState extends State<ExitFlow> {
   _ExitStep _step = _ExitStep.confirm;
-  bool _isMoving = false;
 
   @override
   Widget build(BuildContext context) {
@@ -95,10 +94,13 @@ class _ExitFlowState extends State<ExitFlow> {
 
   Widget _buildMoving() {
     return MovingStepView(
-      isMoving: _isMoving,
-      onLongPress: () {
-        setState(() => _isMoving = true);
-        _simulateMovement();
+      onComplete: () {
+        setState(() => _step = _ExitStep.done);
+        // 실제 앱에서는 프로그램 종료 처리
+        Future.delayed(const Duration(seconds: 2), () {
+          if (!mounted) return;
+          Navigator.of(context).pop();
+        });
       },
     );
   }
@@ -116,18 +118,6 @@ class _ExitFlowState extends State<ExitFlow> {
         ),
       ],
     );
-  }
-
-  void _simulateMovement() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      setState(() => _step = _ExitStep.done);
-      // 실제 앱에서는 프로그램 종료 처리
-      Future.delayed(const Duration(seconds: 2), () {
-        if (!mounted) return;
-        Navigator.of(context).pop();
-      });
-    });
   }
 
 }

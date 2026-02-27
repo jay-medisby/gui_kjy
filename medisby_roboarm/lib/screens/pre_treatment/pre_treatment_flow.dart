@@ -31,7 +31,6 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
   // Step 2
   BodyPartSelection? _selectedBodyPart;
   // Step 3
-  bool _isMoving = false;
   // Step 9
   bool _showTooltip = false;
   // Step 10
@@ -131,7 +130,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        '버튼에서 손을 떼면 이동이 중단됩니다',
+                        '이동을 멈추려면 즉시 버튼에서 손을 떼주세요',
                         style: AppTextStyles.captionLight
                             .copyWith(color: AppColors.textBlack),
                       ),
@@ -180,7 +179,6 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
     } else if (_currentStep > 0) {
       setState(() {
         _currentStep--;
-        _isMoving = false;
       });
     } else {
       context.go('/');
@@ -191,7 +189,6 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
     if (_currentStep < _totalSteps - 1) {
       setState(() {
         _currentStep++;
-        _isMoving = false;
         _showTooltip = false;
         _isPaused = false;
       });
@@ -468,20 +465,9 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
       height: 70,
       child: LongPressMoveButton(
         label: '이동',
-        isMoving: _isMoving,
-        onLongPress: () {
-          setState(() => _isMoving = true);
-          _simulateMovement();
-        },
+        onComplete: _showMoveCompleteDialog,
       ),
     );
-  }
-
-  void _simulateMovement() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      _showMoveCompleteDialog();
-    });
   }
 
   void _showMoveCompleteDialog() {
@@ -495,7 +481,6 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         onConfirm: () {
           Navigator.of(ctx).pop();
           setState(() {
-            _isMoving = false;
             _currentStep = 3; // Advance to step 4
           });
         },

@@ -7,8 +7,11 @@ import '../theme/dimensions.dart';
 enum DeviceStatus {
   online('Online', '시스템 연결됨'),
   ready('Ready', '준비 완료'),
-  run('Run', '치료 진행중'),
-  emergency('Emergency', '비상정지');
+  readySetting('Ready', '치료 설정 중'),
+  run('Run', '치료 중'),
+  returning('Done', '치료 완료'),
+  emergency('Emergency', '비상정지'),
+  safe('Safe', '보호정지');
 
   const DeviceStatus(this.label, this.subLabel);
   final String label;
@@ -78,29 +81,14 @@ class DeviceStatusBadge extends StatelessWidget {
     );
   }
 
-  Color get _dotColor {
-    switch (status) {
-      case DeviceStatus.online:
-        return AppColors.blueDeep;
-      case DeviceStatus.ready:
-        return AppColors.green;
-      case DeviceStatus.run:
-        return AppColors.blue;
-      case DeviceStatus.emergency:
-        return AppColors.red;
-    }
-  }
+  Color get _dotColor => switch (status) {
+        DeviceStatus.online => AppColors.blueDeep,
+        DeviceStatus.ready || DeviceStatus.readySetting => AppColors.green,
+        DeviceStatus.run => AppColors.blue,
+        DeviceStatus.returning => AppColors.blue,
+        DeviceStatus.emergency => AppColors.emergencyAccent,
+        DeviceStatus.safe => AppColors.safeAccent,
+      };
 
-  Color get _labelColor {
-    switch (status) {
-      case DeviceStatus.online:
-        return AppColors.blueDeep;
-      case DeviceStatus.ready:
-        return AppColors.green;
-      case DeviceStatus.run:
-        return AppColors.blue;
-      case DeviceStatus.emergency:
-        return AppColors.red;
-    }
-  }
+  Color get _labelColor => _dotColor;
 }

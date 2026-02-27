@@ -43,20 +43,16 @@ class DetachStepView extends StatelessWidget {
 
 /// 홈 위치 이동 단계 (Exit / GoHome 플로우 공통)
 ///
-/// 롱프레스 버튼으로 암을 홈 위치로 이동시키는 UI.
-/// [message] 안내 텍스트 (기본값: '버튼을 누른 상태를 유지하여 암을\n홈 위치로 이동시켜 주세요.')
-/// [isMoving] 이동 중 여부
-/// [onLongPress] 롱프레스 콜백
+/// 홀드 버튼으로 암을 홈 위치로 이동시키는 UI.
+/// 누적 홀드 시간이 3초에 도달하면 [onComplete] 호출.
 class MovingStepView extends StatelessWidget {
   final String message;
-  final bool isMoving;
-  final VoidCallback? onLongPress;
+  final VoidCallback? onComplete;
 
   const MovingStepView({
     super.key,
     this.message = '버튼을 누른 상태를 유지하여 암을\n홈 위치로 이동시켜 주세요.',
-    required this.isMoving,
-    this.onLongPress,
+    this.onComplete,
   });
 
   @override
@@ -70,14 +66,22 @@ class MovingStepView extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
-        const WarningBox(),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 200),
+          child: WarningBox(),
+        ),
         const SizedBox(height: 20),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 60),
+          padding: const EdgeInsets.symmetric(horizontal: 200),
           child: LongPressMoveButton(
-            isMoving: isMoving,
-            onLongPress: onLongPress,
+            onComplete: onComplete,
           ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '이동을 멈추려면 즉시 버튼에서 손을 떼주세요',
+          style: AppTextStyles.captionLight
+              .copyWith(color: Colors.white),
         ),
       ],
     );

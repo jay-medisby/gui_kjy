@@ -26,7 +26,6 @@ class TreatmentResultScreen extends StatefulWidget {
 
 class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
   _EndPage _page = _EndPage.result;
-  bool _isMoving = false;
 
   @override
   Widget build(BuildContext context) {
@@ -265,55 +264,45 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          '버튼을 누른 상태를 유지하여 암을 홈 위치로 이동시켜 주세요.',
+          '버튼을 누른 상태를 유지하여 장비의 암을 홈 위치로 이동시켜 주세요.',
           style: AppTextStyles.titleMedium
               .copyWith(color: AppColors.textBlack),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 20),
-        const WarningBox(),
+        const SizedBox(height: 40),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 200),
+          child: WarningBox(),
+        ),
         const Spacer(),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 100),
+          padding: const EdgeInsets.symmetric(horizontal: 250),
           child: LongPressMoveButton(
-            isMoving: _isMoving,
-            onLongPress: () {
-              setState(() => _isMoving = true);
-              _simulateHomeMovement();
+            onComplete: () {
+              showDialog(
+                context: context,
+                barrierColor: Colors.transparent,
+                barrierDismissible: false,
+                builder: (ctx) => ConfirmDialog(
+                  title: '장비의 암이 홈 위치로 이동을 완료하였습니다',
+                  confirmLabel: '확인',
+                  onConfirm: () {
+                    Navigator.of(ctx).pop();
+                    context.go('/');
+                  },
+                ),
+              );
             },
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          '버튼에서 손을 떼면 이동이 중단됩니다',
+          '이동을 멈추려면 즉시 버튼에서 손을 떼주세요',
           style: AppTextStyles.captionLight
               .copyWith(color: AppColors.textBlack),
         ),
         const Spacer(),
       ],
-    );
-  }
-
-  void _simulateHomeMovement() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      _showMoveCompleteDialog();
-    });
-  }
-
-  void _showMoveCompleteDialog() {
-    showDialog(
-      context: context,
-      barrierColor: Colors.transparent,
-      barrierDismissible: false,
-      builder: (ctx) => ConfirmDialog(
-        title: '장비의 암이 홈 위치로\n이동을 완료하였습니다',
-        confirmLabel: '확인',
-        onConfirm: () {
-          Navigator.of(ctx).pop();
-          context.go('/');
-        },
-      ),
     );
   }
 

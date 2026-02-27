@@ -34,7 +34,6 @@ class GoHomeFlow extends StatefulWidget {
 
 class _GoHomeFlowState extends State<GoHomeFlow> {
   _GoHomeStep _step = _GoHomeStep.confirm;
-  bool _isMoving = false;
 
   @override
   Widget build(BuildContext context) {
@@ -97,10 +96,8 @@ class _GoHomeFlowState extends State<GoHomeFlow> {
 
   Widget _buildMoving() {
     return MovingStepView(
-      isMoving: _isMoving,
-      onLongPress: () {
-        setState(() => _isMoving = true);
-        _simulateMovement();
+      onComplete: () {
+        setState(() => _step = _GoHomeStep.done);
       },
     );
   }
@@ -143,16 +140,6 @@ class _GoHomeFlowState extends State<GoHomeFlow> {
         ),
       ],
     );
-  }
-
-  void _simulateMovement() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      setState(() {
-        _isMoving = false;
-        _step = _GoHomeStep.done;
-      });
-    });
   }
 
 }

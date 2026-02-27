@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
+import '../../providers/device_provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/text_styles.dart';
 import '../../models/menu_type.dart';
 import '../../widgets/app_scaffold.dart';
 import '../../widgets/device_status_badge.dart';
+import '../../widgets/confirm_dialog.dart';
 
 // ── Screens ──
 import '../home/home_screen.dart';
@@ -70,15 +73,16 @@ class DevCatalogScreen extends StatelessWidget {
                         runSpacing: 12,
                         children: [
                           _CatalogButton(
-                            icon: Icons.check_circle_outline,
-                            label: 'Ready',
-                            description: '준비 완료 상태',
+                            icon: Icons.play_arrow,
+                            label: 'Screen 1→5',
+                            description: '순차 진행 (초기화→완료)',
                             color: AppColors.green,
                             onTap: () => _pushScreen(
                                 context,
-                                'Home — Ready',
+                                'Home — Screen 1→5',
                                 const HomeScreen(
-                                    initialStatus: HomeStatus.ready)),
+                                    initialStatus: HomeStatus.initializing),
+                                deviceStatus: DeviceStatus.online),
                           ),
                           _CatalogButton(
                             icon: Icons.hourglass_top,
@@ -89,18 +93,20 @@ class DevCatalogScreen extends StatelessWidget {
                                 context,
                                 'Home — Initializing',
                                 const HomeScreen(
-                                    initialStatus: HomeStatus.initializing)),
+                                    initialStatus: HomeStatus.initializing),
+                                deviceStatus: DeviceStatus.online),
                           ),
                           _CatalogButton(
-                            icon: Icons.warning_amber,
+                            icon: Icons.error,
                             label: 'Arm Not Home',
                             description: '원점 이탈 상태',
-                            color: AppColors.orange,
+                            color: const Color(0xFF1565C0),
                             onTap: () => _pushScreen(
                                 context,
                                 'Home — Arm Not Home',
                                 const HomeScreen(
-                                    initialStatus: HomeStatus.armNotHome)),
+                                    initialStatus: HomeStatus.armNotHome),
+                                deviceStatus: DeviceStatus.online),
                           ),
                           _CatalogButton(
                             icon: Icons.sync,
@@ -111,7 +117,36 @@ class DevCatalogScreen extends StatelessWidget {
                                 context,
                                 'Home — Moving',
                                 const HomeScreen(
-                                    initialStatus: HomeStatus.moving)),
+                                    initialStatus: HomeStatus.moving),
+                                deviceStatus: DeviceStatus.online),
+                          ),
+                          _CatalogButton(
+                            icon: Icons.check_circle,
+                            label: 'Move Complete',
+                            description: '이동 완료',
+                            color: AppColors.green,
+                            onTap: () => showDialog(
+                              context: context,
+                              barrierColor: Colors.transparent,
+                              barrierDismissible: false,
+                              builder: (dialogContext) => ConfirmDialog(
+                                title: '장비의 암이 홈 위치로 이동을 완료하였습니다',
+                                confirmLabel: '확인',
+                                onConfirm: () =>
+                                    Navigator.of(dialogContext).pop(),
+                              ),
+                            ),
+                          ),
+                          _CatalogButton(
+                            icon: Icons.check_circle_outline,
+                            label: 'Ready',
+                            description: '준비 완료 상태',
+                            color: AppColors.green,
+                            onTap: () => _pushScreen(
+                                context,
+                                'Home — Ready',
+                                const HomeScreen(
+                                    initialStatus: HomeStatus.ready)),
                           ),
                         ],
                       ),
@@ -128,40 +163,40 @@ class DevCatalogScreen extends StatelessWidget {
                           _CatalogButton(
                             icon: Icons.playlist_play,
                             label: 'PreTreatment',
-                            description: '시술 준비 12단계',
+                            description: '치료 준비 12단계',
                             color: AppColors.blue,
                             onTap: () => _pushScreen(context,
-                                'PreTreatmentFlow', const PreTreatmentFlow()),
+                                'PreTreatmentFlow', const PreTreatmentFlow(),
+                                deviceStatus: DeviceStatus.readySetting),
                           ),
                           _CatalogButton(
                             icon: Icons.monitor_heart,
                             label: 'Treatment',
-                            description: '시술 대시보드',
+                            description: '치료 대시보드',
                             color: AppColors.green,
                             onTap: () => _pushScreen(
                                 context,
                                 'TreatmentDashboard',
-                                const TreatmentDashboard()),
+                                const TreatmentDashboard(),
+                                deviceStatus: DeviceStatus.run),
                           ),
                           _CatalogButton(
                             icon: Icons.add_road,
                             label: 'Trajectory Add',
-                            description: '궤적 추가 3단계',
+                            description: '궤적 추가',
                             color: AppColors.blue,
-                            onTap: () => _pushScreen(
-                                context,
-                                'TrajectoryAddFlow',
-                                const TrajectoryAddFlow()),
+                            onTap: () => TrajectoryAddFlow.show(context),
                           ),
                           _CatalogButton(
                             icon: Icons.assessment,
                             label: 'Treatment Result',
-                            description: '시술 결과',
+                            description: '치료 결과',
                             color: AppColors.green,
                             onTap: () => _pushScreen(
                                 context,
                                 'TreatmentResultScreen',
-                                const TreatmentResultScreen()),
+                                const TreatmentResultScreen(),
+                                deviceStatus: DeviceStatus.returning),
                           ),
                         ],
                       ),
@@ -178,7 +213,7 @@ class DevCatalogScreen extends StatelessWidget {
                           _CatalogButton(
                             icon: Icons.settings,
                             label: 'Settings',
-                            description: '설정 (18페이지)',
+                            description: '설정',
                             color: Colors.white70,
                             onTap: () => SettingsFlow.show(context),
                           ),
@@ -226,10 +261,19 @@ class DevCatalogScreen extends StatelessWidget {
   }
 
   /// 화면을 풀스크린 오버레이로 띄움 (뒤로가기 가능)
-  void _pushScreen(BuildContext context, String title, Widget screen) {
+  void _pushScreen(
+    BuildContext context,
+    String title,
+    Widget screen, {
+    DeviceStatus deviceStatus = DeviceStatus.ready,
+  }) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => _ScreenWrapper(title: title, child: screen),
+        builder: (_) => _ScreenWrapper(
+          title: title,
+          initialDeviceStatus: deviceStatus,
+          child: screen,
+        ),
       ),
     );
   }
@@ -240,22 +284,42 @@ class DevCatalogScreen extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════
 
 /// 화면 래핑 — AppScaffold(사이드바) + 뒤로가기 버튼
-class _ScreenWrapper extends StatelessWidget {
+class _ScreenWrapper extends StatefulWidget {
   final String title;
   final Widget child;
+  final DeviceStatus initialDeviceStatus;
 
-  const _ScreenWrapper({required this.title, required this.child});
+  const _ScreenWrapper({
+    required this.title,
+    required this.child,
+    this.initialDeviceStatus = DeviceStatus.ready,
+  });
+
+  @override
+  State<_ScreenWrapper> createState() => _ScreenWrapperState();
+}
+
+class _ScreenWrapperState extends State<_ScreenWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<DeviceProvider>().setStatus(widget.initialDeviceStatus);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final status = context.watch<DeviceProvider>().status;
     return AppScaffold(
       currentMenu: MenuType.start,
       onMenuTap: (_) {},
       onHomeTap: () => Navigator.of(context).pop(),
-      deviceStatus: DeviceStatus.ready,
+      deviceStatus: status,
       child: Stack(
         children: [
-          child,
+          widget.child,
           // 뒤로가기 버튼
           Positioned(
             top: 8,

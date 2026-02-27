@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../../providers/device_provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/text_styles.dart';
 import '../../widgets/content_card.dart';
 import '../../widgets/confirm_dialog.dart';
+import '../../widgets/device_status_badge.dart';
 import '../../widgets/long_press_move_button.dart';
 import '../../widgets/warning_box.dart';
 
@@ -32,6 +35,31 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late HomeStatus _status = widget.initialStatus ?? HomeStatus.ready;
+
+  @override
+  void initState() {
+    super.initState();
+    _syncDeviceStatus();
+    if (_status == HomeStatus.initializing) {
+      _simulateInitializing();
+    }
+  }
+
+  /// HomeStatus → DeviceStatus 동기화
+  void _syncDeviceStatus() {
+    final deviceStatus = _status == HomeStatus.ready
+        ? DeviceStatus.ready
+        : DeviceStatus.online;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<DeviceProvider>().setStatus(deviceStatus);
+    });
+  }
+
+  void _setStatus(HomeStatus newStatus) {
+    setState(() => _status = newStatus);
+    _syncDeviceStatus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return switch (_status) {
       HomeStatus.initializing => _buildInitializingContent(),
       HomeStatus.armNotHome => _buildArmNotHomeContent(),
-      HomeStatus.moving => _buildMovingContent(),
+      HomeStatus.moving => _buildArmNotHomeContent(),
       HomeStatus.ready => _buildReadyContent(),
     };
   }
@@ -163,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> _buildArmNotHomeContent() {
     return [
       _statusRow(
-          Icons.warning_amber_rounded, '암이 홈 위치에 있지 않습니다', AppColors.orange),
+          Icons.error, '암이 홈 위치에 있지 않습니다', const Color(0xFF1565C0)),
       const SizedBox(height: 16),
       Padding(
         padding: _descIndent,
@@ -173,36 +201,21 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       const SizedBox(height: 20),
-      const WarningBox(),
+      const WarningBox(iconSize: 20, compact: true),
       const SizedBox(height: 12),
       LongPressMoveButton(
-        isMoving: false,
-        onLongPress: () {
-          setState(() => _status = HomeStatus.moving);
-          _simulateMovement();
-        },
+        onComplete: _showMoveCompleteDialog,
+      ),
+      const SizedBox(height: 8),
+      Center(
+        child: Text(
+          '이동을 멈추려면 즉시 버튼에서 손을 떼주세요',
+          style: AppTextStyles.captionLight.copyWith(color: AppColors.textBlack),
+        ),
       ),
     ];
   }
 
-  /// Screen 3: 홈 위치로 이동중
-  List<Widget> _buildMovingContent() {
-    return [
-      _statusRow(Icons.autorenew, '홈 위치로 이동중...', AppColors.blue),
-      const SizedBox(height: 16),
-      Padding(
-        padding: _descIndent,
-        child: Text(
-          '버튼을 길게 눌러서 장비의 암을\n홈 위치로 이동시켜 주세요.',
-          style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textBlack),
-        ),
-      ),
-      const SizedBox(height: 20),
-      const WarningBox(),
-      const SizedBox(height: 12),
-      const LongPressMoveButton(isMoving: true),
-    ];
-  }
 
   /// Screen 5: 준비 완료
   List<Widget> _buildReadyContent() {
@@ -215,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '장비의 암(Arm)이 홈 위치에 있습니다.',
+              '장비의 암이 홈 위치에 있습니다.',
               style: AppTextStyles.bodyMedium.copyWith(
                   color: AppColors.textBlack),
             ),
@@ -253,12 +266,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // _warningText, _buildLongPressButton, _buildMovingButton → 공통 위젯으로 교체됨
 
-  // ── Movement simulation (임시 — DeviceProvider 연동 전) ──
+  // ── Simulation (임시 — DeviceProvider 연동 전) ──
 
-  void _simulateMovement() {
+  void _simulateInitializing() {
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
-      _showMoveCompleteDialog();
+      _setStatus(HomeStatus.armNotHome);
     });
   }
 
@@ -269,11 +282,11 @@ class _HomeScreenState extends State<HomeScreen> {
       barrierColor: Colors.transparent,
       barrierDismissible: false,
       builder: (dialogContext) => ConfirmDialog(
-        title: '장비의 암이 홈 위치로\n이동을 완료하였습니다',
+        title: '장비의 암이 홈 위치로 이동을 완료하였습니다',
         confirmLabel: '확인',
         onConfirm: () {
           Navigator.of(dialogContext).pop();
-          setState(() => _status = HomeStatus.ready);
+          _setStatus(HomeStatus.ready);
         },
       ),
     );

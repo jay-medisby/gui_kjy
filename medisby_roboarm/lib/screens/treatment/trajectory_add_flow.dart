@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../../theme/colors.dart';
 import '../../theme/dimensions.dart';
@@ -39,6 +41,17 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
   int _verifySpeed = 5;
   bool _isPaused = false;
   bool _isMovingPaused = false;
+
+  // ── 이동 타이머 (일시정지 가능) ──
+  Timer? _armMoveTimer;
+  int _armMoveRemainingMs = 3000;
+  DateTime? _armMoveStartTime;
+
+  @override
+  void dispose() {
+    _armMoveTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,8 +177,25 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
           variant: _isMovingPaused ? ButtonVariant.blue : ButtonVariant.dark,
           size: ButtonSize.dialog,
           onPressed: () {
-            setState(() => _isMovingPaused = !_isMovingPaused);
-            // TODO: ROS 통신 연동 시 실제 일시정지/재개 처리
+            if (_isMovingPaused) {
+              // 재개: 남은 시간으로 타이머 재시작
+              setState(() => _isMovingPaused = false);
+              if (_armMoveRemainingMs > 0) {
+                _armMoveStartTime = DateTime.now();
+                _armMoveTimer = Timer(Duration(milliseconds: _armMoveRemainingMs), () {
+                  if (!mounted) return;
+                  setState(() => _step = _AddStep.moveDone);
+                });
+              }
+            } else {
+              // 일시정지: 타이머 취소 + 남은 시간 저장
+              setState(() => _isMovingPaused = true);
+              if (_armMoveTimer != null && _armMoveStartTime != null) {
+                _armMoveTimer!.cancel();
+                final elapsed = DateTime.now().difference(_armMoveStartTime!).inMilliseconds;
+                _armMoveRemainingMs = (_armMoveRemainingMs - elapsed).clamp(0, 3000);
+              }
+            }
           },
         ),
         const Spacer(),
@@ -422,9 +452,12 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
   // Helpers
   // ════════════════════════════════════════════
 
-  /// 암 이동 시뮬레이션
+  /// 암 이동 시뮬레이션 (일시정지 가능)
   void _simulateArmMovement() {
-    Future.delayed(const Duration(seconds: 3), () {
+    _armMoveRemainingMs = 3000;
+    _armMoveTimer?.cancel();
+    _armMoveStartTime = DateTime.now();
+    _armMoveTimer = Timer(Duration(milliseconds: _armMoveRemainingMs), () {
       if (!mounted) return;
       setState(() => _step = _AddStep.moveDone);
     });
