@@ -91,7 +91,7 @@ class _SettingsFlowState extends State<SettingsFlow> {
 
   // ── 테스트 이동 타이머 (ROM/Vel 공용) ──
   Timer? _moveTimer;
-  int _moveRemainingMs = 3000;
+  int _moveRemainingMs = 1500;
   DateTime? _moveStartTime;
 
   // ── 궤적실행 테스트 상태 ──
@@ -1609,7 +1609,7 @@ class _SettingsFlowState extends State<SettingsFlow> {
               if (_moveTimer != null && _moveStartTime != null) {
                 _moveTimer!.cancel();
                 final elapsed = DateTime.now().difference(_moveStartTime!).inMilliseconds;
-                _moveRemainingMs = (_moveRemainingMs - elapsed).clamp(0, 3000);
+                _moveRemainingMs = (_moveRemainingMs - elapsed).clamp(0, 1500);
               }
             },
           );
@@ -1746,7 +1746,7 @@ class _SettingsFlowState extends State<SettingsFlow> {
 
   void _simulateTestMovement(_SettingsPage nextPage) {
     _moveNextPage = nextPage;
-    _moveRemainingMs = 3000;
+    _moveRemainingMs = 1500;
     _moveTimer?.cancel();
     _moveStartTime = DateTime.now();
     _moveTimer = Timer(Duration(milliseconds: _moveRemainingMs), () {

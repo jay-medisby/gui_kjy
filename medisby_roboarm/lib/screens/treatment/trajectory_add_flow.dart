@@ -44,7 +44,7 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
 
   // ── 이동 타이머 (일시정지 가능) ──
   Timer? _armMoveTimer;
-  int _armMoveRemainingMs = 3000;
+  int _armMoveRemainingMs = 1500;
   DateTime? _armMoveStartTime;
 
   @override
@@ -193,7 +193,7 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
               if (_armMoveTimer != null && _armMoveStartTime != null) {
                 _armMoveTimer!.cancel();
                 final elapsed = DateTime.now().difference(_armMoveStartTime!).inMilliseconds;
-                _armMoveRemainingMs = (_armMoveRemainingMs - elapsed).clamp(0, 3000);
+                _armMoveRemainingMs = (_armMoveRemainingMs - elapsed).clamp(0, 1500);
               }
             }
           },
@@ -236,6 +236,7 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
   Widget _buildInputNew() {
     return Column(
       children: [
+        const SizedBox(height: 70),
         Expanded(
           child: Stack(
             children: [
@@ -367,6 +368,7 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
   Widget _buildVerify() {
     return Column(
       children: [
+        const SizedBox(height: 70),
         Text(
           '추가 궤적 확인',
           style: AppTextStyles.headingLarge,
@@ -454,7 +456,7 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
 
   /// 암 이동 시뮬레이션 (일시정지 가능)
   void _simulateArmMovement() {
-    _armMoveRemainingMs = 3000;
+    _armMoveRemainingMs = 1500;
     _armMoveTimer?.cancel();
     _armMoveStartTime = DateTime.now();
     _armMoveTimer = Timer(Duration(milliseconds: _armMoveRemainingMs), () {
