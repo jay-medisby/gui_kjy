@@ -8,6 +8,7 @@ import '../../widgets/circular_progress.dart';
 import '../../widgets/long_press_move_button.dart';
 import '../../widgets/warning_box.dart';
 import '../../widgets/confirm_dialog.dart';
+import '../../widgets/video_popup.dart';
 
 /// 치료 결과 → 구동장착부 탈착 → 착용 해제 → 홈 위치 이동 → 완료
 enum _EndPage {
@@ -161,26 +162,21 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
         const SizedBox(height: 16),
         Expanded(
           child: Center(
-            child: Stack(
-              clipBehavior: Clip.none,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 400,
-                  height: 280,
-                  decoration: BoxDecoration(
-                    color: AppColors.placeholderBg,
-                    borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                  child: Image.asset(
+                    'assets/images/upper_mounting.png',
+                    width: 400,
+                    height: 280,
+                    fit: BoxFit.cover,
                   ),
-                  alignment: Alignment.center,
-                  child: Text('분리 이미지',
-                      style: AppTextStyles.bodyLarge
-                          .copyWith(color: AppColors.grayHighlight)),
                 ),
-                Positioned(
-                  right: -116,
-                  top: 0,
-                  child: _videoButton('탈착 동영상'),
-                ),
+                const SizedBox(width: 16),
+                _videoButton('탈착 동영상', 'assets/videos/upper_unmounting.mp4'),
               ],
             ),
           ),
@@ -216,26 +212,21 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
         const SizedBox(height: 16),
         Expanded(
           child: Center(
-            child: Stack(
-              clipBehavior: Clip.none,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 400,
-                  height: 280,
-                  decoration: BoxDecoration(
-                    color: AppColors.placeholderBg,
-                    borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                  child: Image.asset(
+                    'assets/images/upper_wearing.png',
+                    width: 400,
+                    height: 280,
+                    fit: BoxFit.cover,
                   ),
-                  alignment: Alignment.center,
-                  child: Text('분리 이미지',
-                      style: AppTextStyles.bodyLarge
-                          .copyWith(color: AppColors.grayHighlight)),
                 ),
-                Positioned(
-                  right: -116,
-                  top: 0,
-                  child: _videoButton('해제 동영상'),
-                ),
+                const SizedBox(width: 16),
+                _videoButton('해제 동영상', 'assets/videos/upper_takeoff.mp4'),
               ],
             ),
           ),
@@ -328,25 +319,29 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
     );
   }
 
-  Widget _videoButton(String label) {
+  Widget _videoButton(String label, String? videoPath) {
+    final enabled = videoPath != null;
+    final color = enabled ? AppColors.green : AppColors.grayHighlight;
     return GestureDetector(
-      onTap: () {},
+      onTap: enabled
+          ? () => showVideoPopup(context, videoPath)
+          : null,
       child: Container(
         width: 100,
         height: 100,
         decoration: BoxDecoration(
           color: AppColors.cardWhite,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.green, width: 1.5),
+          border: Border.all(color: color, width: 1.5),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.videocam, color: AppColors.green, size: 32),
+            Icon(Icons.videocam, color: color, size: 32),
             const SizedBox(height: 6),
             Text(label,
                 style: AppTextStyles.captionLight.copyWith(
-                    color: AppColors.green, fontSize: 14),
+                    color: color, fontSize: 14),
                 textAlign: TextAlign.center),
           ],
         ),

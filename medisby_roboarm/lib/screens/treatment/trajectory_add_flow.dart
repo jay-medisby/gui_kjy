@@ -340,7 +340,7 @@ class _TrajectoryAddFlowState extends State<TrajectoryAddFlow> {
                 right: 0,
                 child: Center(
                   child: Image.asset(
-                    'assets/images/img_stepper_ver1_text.png',
+                    'assets/images/stepper_ver1_text.png',
                     height: 140,
                     fit: BoxFit.contain,
                   ),

@@ -10,6 +10,7 @@ import '../../widgets/step_indicator.dart';
 import '../../widgets/confirm_dialog.dart';
 import '../../widgets/long_press_move_button.dart';
 import '../../widgets/trajectory_progress_bar.dart';
+import '../../widgets/video_popup.dart';
 
 /// 환자군 (3종)
 enum PatientGroup { low, medium, high }
@@ -226,9 +227,9 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
 
   Widget _buildStep1PatientGroup() {
     const groups = [
-      (PatientGroup.low, '저부하', '(골다공증, 뇌졸증, 소아)', 'assets/images/img_group1.png'),
-      (PatientGroup.medium, '중부하', '(동결견, 수술 후 기능회복)', 'assets/images/img_group2.png'),
-      (PatientGroup.high, '고부하', '(근력 강화)', 'assets/images/img_group3.png'),
+      (PatientGroup.low, '저부하', '(골다공증, 뇌졸증, 소아)', 'assets/images/group1.png'),
+      (PatientGroup.medium, '중부하', '(동결견, 수술 후 기능회복)', 'assets/images/group2.png'),
+      (PatientGroup.high, '고부하', '(근력 강화)', 'assets/images/group3.png'),
     ];
 
     return Column(
@@ -324,7 +325,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
               const SizedBox(width: 12),
               // Center: body figure
               Image.asset(
-                'assets/images/img_fullbody.png',
+                'assets/images/fullbody.png',
                 width: 160,
                 height: 340,
                 fit: BoxFit.contain,
@@ -450,7 +451,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
             heightFactor: 1.3,
             alignment: Alignment.topCenter,
             child: Image.asset(
-              'assets/images/img_arm.png',
+              'assets/images/arm.png',
               fit: BoxFit.contain,
             ),
           ),
@@ -524,7 +525,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                   heightFactor: 0.90,
                   child: Center(
                     child: Image.asset(
-                      'assets/images/img_position_$_positionImageKey.png',
+                      'assets/images/position_$_positionImageKey.png',
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -559,7 +560,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                   heightFactor: 0.90,
                   child: Center(
                     child: Image.asset(
-                      'assets/images/img_position_${_positionImageKey}2.png',
+                      'assets/images/position_${_positionImageKey}2.png',
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -605,7 +606,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                       child: FractionallySizedBox(
                         heightFactor: 0.5,
                         child: Image.asset(
-                          'assets/images/img_wheel_front.png',
+                          'assets/images/wheel_front.png',
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -622,7 +623,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                     const SizedBox(height: 12),
                     Expanded(
                       child: Image.asset(
-                        'assets/images/img_wheel_rear.png',
+                        'assets/images/wheel_rear.png',
                         fit: BoxFit.contain,
                       ),
                     ),
@@ -663,29 +664,40 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         const SizedBox(height: 16),
         Expanded(
           child: Center(
-            child: Stack(
-              clipBehavior: Clip.none,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 착용 이미지 (placeholder) — 중앙 정렬 기준
-                Container(
-                  width: 400,
-                  height: 280,
-                  decoration: BoxDecoration(
-                    color: AppColors.placeholderBg,
-                    borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '착용 이미지',
-                    style: AppTextStyles.bodyLarge
-                        .copyWith(color: AppColors.grayHighlight),
-                  ),
-                ),
-                // 착용 동영상 버튼 — 우측 상단
-                Positioned(
-                  right: -116,
-                  top: 0,
-                  child: _videoButton('착용 동영상'),
+                // 착용 이미지
+                isUpper
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                        child: Image.asset(
+                          'assets/images/upper_wearing.png',
+                          width: 400,
+                          height: 280,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Container(
+                        width: 400,
+                        height: 280,
+                        decoration: BoxDecoration(
+                          color: AppColors.placeholderBg,
+                          borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '착용 이미지',
+                          style: AppTextStyles.bodyLarge
+                              .copyWith(color: AppColors.grayHighlight),
+                        ),
+                      ),
+                const SizedBox(width: 16),
+                // 착용 동영상 버튼
+                _videoButton(
+                  '착용 동영상',
+                  isUpper ? 'assets/videos/upper_wearing.mp4' : null,
                 ),
               ],
             ),
@@ -723,33 +735,33 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
             children: [
               // 발판 이미지
               Image.asset(
-                'assets/images/img_stepper_ver1_text.png',
+                'assets/images/stepper_ver1_text.png',
                 height: 150,
                 fit: BoxFit.contain,
               ),
               const SizedBox(width: 40),
               // 체결 이미지 + 동영상 버튼
-              Stack(
-                clipBehavior: Clip.none,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 400,
-                    height: 280,
-                    decoration: BoxDecoration(
-                      color: AppColors.placeholderBg,
-                      borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '체결 이미지',
-                      style: AppTextStyles.bodyLarge
-                          .copyWith(color: AppColors.grayHighlight),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                    child: Image.asset(
+                      (_selectedBodyPart?.isUpper ?? true)
+                          ? 'assets/images/upper_mounting.png'
+                          : 'assets/images/lower_mounting.png',
+                      width: 400,
+                      height: 280,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  Positioned(
-                    right: -116,
-                    top: 0,
-                    child: _videoButton('체결 동영상'),
+                  const SizedBox(width: 16),
+                  _videoButton(
+                    '체결 동영상',
+                    (_selectedBodyPart?.isUpper ?? true)
+                        ? 'assets/videos/upper_mounting.mp4'
+                        : 'assets/videos/lower_mounting.mp4',
                   ),
                 ],
               ),
@@ -857,7 +869,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           right: 0,
           child: Center(
             child: Image.asset(
-              'assets/images/img_stepper_ver1_text.png',
+              'assets/images/stepper_ver1_text.png',
               height: 180,
               fit: BoxFit.contain,
             ),
@@ -994,7 +1006,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
           right: 0,
           child: Center(
             child: Image.asset(
-              'assets/images/img_stepper_ver1_text.png',
+              'assets/images/stepper_ver1_text.png',
               height: 180,
               fit: BoxFit.contain,
             ),
@@ -1043,7 +1055,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
                       ),
                       const SizedBox(width: 8),
                       Image.asset(
-                        'assets/images/img_oneway.png',
+                        'assets/images/oneway.png',
                         width: 80,
                         height: 80,
                         fit: BoxFit.contain,
@@ -1344,7 +1356,7 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
         // Hand switch image
         Center(
           child: Image.asset(
-            'assets/images/img_handswitch.png',
+            'assets/images/handswitch.png',
             height: 260,
             fit: BoxFit.contain,
           ),
@@ -1359,10 +1371,10 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
 
   String _bodyPartImage(BodyPartSelection part) {
     return switch (part) {
-      BodyPartSelection.leftUpper => 'assets/images/img_upper_left3.png',
-      BodyPartSelection.rightUpper => 'assets/images/img_upper_right3.png',
-      BodyPartSelection.leftLower => 'assets/images/img_lower_left3.png',
-      BodyPartSelection.rightLower => 'assets/images/img_lower_right3.png',
+      BodyPartSelection.leftUpper => 'assets/images/upper_left3.png',
+      BodyPartSelection.rightUpper => 'assets/images/upper_right3.png',
+      BodyPartSelection.leftLower => 'assets/images/lower_left3.png',
+      BodyPartSelection.rightLower => 'assets/images/lower_right3.png',
     };
   }
 
@@ -1410,28 +1422,30 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
     );
   }
 
-  Widget _videoButton(String label) {
+  Widget _videoButton(String label, String? videoPath) {
+    final enabled = videoPath != null;
+    final color = enabled ? AppColors.green : AppColors.grayHighlight;
     return GestureDetector(
-      onTap: () {
-        // TODO: open video
-      },
+      onTap: enabled
+          ? () => showVideoPopup(context, videoPath)
+          : null,
       child: Container(
         width: 100,
         height: 100,
         decoration: BoxDecoration(
           color: AppColors.cardWhite,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.green, width: 1.5),
+          border: Border.all(color: color, width: 1.5),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.videocam, color: AppColors.green, size: 32),
+            Icon(Icons.videocam, color: color, size: 32),
             const SizedBox(height: 6),
             Text(
               label,
               style: AppTextStyles.captionLight.copyWith(
-                color: AppColors.green,
+                color: color,
                 fontSize: 14,
               ),
               textAlign: TextAlign.center,

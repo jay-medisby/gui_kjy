@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 450,
               child: Center(
                 child: Image.asset(
-                  'assets/images/img_roboarm.png',
+                  'assets/images/roboarm.png',
                   width: 450,
                   height: 450,
                   fit: BoxFit.contain,

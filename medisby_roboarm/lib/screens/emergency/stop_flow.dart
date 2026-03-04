@@ -173,7 +173,7 @@ class _StopFlowState extends State<StopFlow> {
                     style: AppTextStyles.bodyMedium),
                 const SizedBox(height: 8),
                 Image.asset(
-                  'assets/images/img_ems.png',
+                  'assets/images/ems.png',
                   width: 150,
                   height: 150,
                   fit: BoxFit.contain,
