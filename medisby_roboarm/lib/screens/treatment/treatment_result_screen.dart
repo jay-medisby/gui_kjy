@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../../providers/treatment_params_provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/dimensions.dart';
 import '../../theme/text_styles.dart';
@@ -63,13 +65,13 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // 평균 속도
-              _resultCard('평균 속도', 0.6, '6'),
+              _resultCard('평균 속도', 0.6, '6.0'),
               const SizedBox(width: 16),
               // 치료 시간
               _resultCard('치료 시간', 1.0, '00:30:30'),
               const SizedBox(width: 16),
               // 평균 부하도
-              _resultCard('평균 부하도', 0.5, '5'),
+              _resultCard('평균 부하도', 0.5, '5.0'),
             ],
           ),
         ),
@@ -145,16 +147,26 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
   // ──────────────────────────────────────────
 
   Widget _buildSeparateArm() {
+    final params = context.read<TreatmentParamsProvider>();
+    final limb = params.limbLabel;
+    final isUpper = params.isUpper;
+    final imgPath = isUpper
+        ? 'assets/images/upper_mounting.png'
+        : 'assets/images/lower_mounting.png';
+    final videoPath = isUpper
+        ? 'assets/videos/upper_unmounting.mp4'
+        : 'assets/videos/lower_unmounting.mp4';
+
     return Column(
       children: [
         Text(
-          '장비의 암과 상지 구동장착부 탈착',
+          '장비의 암과 $limb 구동장착부 탈착',
           style:
               AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
         ),
         const SizedBox(height: 24),
         Text(
-          '장비의 암에 체결된 상지 구동장착부를 탈착해 주세요',
+          '장비의 암에 체결된 $limb 구동장착부를 탈착해 주세요',
           style:
               AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
           textAlign: TextAlign.center,
@@ -169,14 +181,14 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
                   child: Image.asset(
-                    'assets/images/upper_mounting.png',
+                    imgPath,
                     width: 400,
                     height: 280,
                     fit: BoxFit.cover,
                   ),
                 ),
                 const SizedBox(width: 16),
-                _videoButton('탈착 동영상', 'assets/videos/upper_unmounting.mp4'),
+                _videoButton('탈착 동영상', videoPath),
               ],
             ),
           ),
@@ -195,16 +207,22 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
   // ──────────────────────────────────────────
 
   Widget _buildSeparateWear() {
+    final params = context.read<TreatmentParamsProvider>();
+    final limb = params.limbLabel;
+    final isUpper = params.isUpper;
+    final imgPath = isUpper ? 'assets/images/upper_wearing.png' : null;
+    final videoPath = isUpper ? 'assets/videos/upper_takeoff.mp4' : null;
+
     return Column(
       children: [
         Text(
-          '상지 구동장착부 착용 해제',
+          '$limb 구동장착부 착용 해제',
           style:
               AppTextStyles.headingLarge.copyWith(color: AppColors.textBlack),
         ),
         const SizedBox(height: 24),
         Text(
-          '환자분으로부터 상지 구동장착부 착용을 해제해 주세요',
+          '환자분으로부터 $limb 구동장착부 착용을 해제해 주세요',
           style:
               AppTextStyles.bodyMedium.copyWith(color: AppColors.textBlack, fontSize: 20),
           textAlign: TextAlign.center,
@@ -216,17 +234,31 @@ class _TreatmentResultScreenState extends State<TreatmentResultScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
-                  child: Image.asset(
-                    'assets/images/upper_wearing.png',
+                if (imgPath != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                    child: Image.asset(
+                      imgPath,
+                      width: 400,
+                      height: 280,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                else
+                  Container(
                     width: 400,
                     height: 280,
-                    fit: BoxFit.cover,
+                    decoration: BoxDecoration(
+                      color: AppColors.grayHighlight,
+                      borderRadius: BorderRadius.circular(AppDimensions.smallBorderRadius),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text('이미지 준비 중',
+                        style: AppTextStyles.bodyMedium
+                            .copyWith(color: AppColors.textGray)),
                   ),
-                ),
                 const SizedBox(width: 16),
-                _videoButton('해제 동영상', 'assets/videos/upper_takeoff.mp4'),
+                _videoButton('해제 동영상', videoPath),
               ],
             ),
           ),

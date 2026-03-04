@@ -203,6 +203,41 @@ class DevCatalogScreen extends StatelessWidget {
 
                       const SizedBox(height: 28),
 
+                      // ── 준비 단계별 진입 ──
+                      _SectionHeader(title: '준비 단계별 진입'),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final e in [
+                            (0, '환자군 선택'),
+                            (1, '치료 부위'),
+                            (2, '자세 이동'),
+                            (3, '장비 정렬'),
+                            (4, '바퀴 고정'),
+                            (5, '착용'),
+                            (6, '체결'),
+                            (7, '시작 자세'),
+                            (8, '궤적 입력'),
+                            (9, '궤적 확인'),
+                            (10, '파라미터'),
+                            (11, '핸드스위치'),
+                          ])
+                            _MiniButton(
+                              label: '${e.$1 + 1}. ${e.$2}',
+                              onTap: () => _pushScreen(
+                                context,
+                                'Step ${e.$1 + 1}: ${e.$2}',
+                                PreTreatmentFlow(initialStep: e.$1),
+                                deviceStatus: DeviceStatus.readySetting,
+                              ),
+                            ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 28),
+
                       // ── 모달 플로우 ──
                       _SectionHeader(title: '모달 플로우'),
                       const SizedBox(height: 12),
@@ -426,6 +461,35 @@ class _CatalogButton extends StatelessWidget {
                       .copyWith(color: Colors.white54, fontSize: 13)),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 작은 버튼 (단계별 진입용)
+class _MiniButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _MiniButton({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white.withValues(alpha: 0.06),
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.white24),
+          ),
+          child: Text(label,
+              style: const TextStyle(color: Colors.white70, fontSize: 13)),
         ),
       ),
     );

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../../providers/treatment_params_provider.dart';
 import '../../models/body_part.dart';
 import '../../theme/colors.dart';
 import '../../theme/dimensions.dart';
@@ -16,7 +18,8 @@ import '../../widgets/video_popup.dart';
 enum PatientGroup { low, medium, high }
 
 class PreTreatmentFlow extends StatefulWidget {
-  const PreTreatmentFlow({super.key});
+  final int initialStep;
+  const PreTreatmentFlow({super.key, this.initialStep = 0});
 
   @override
   State<PreTreatmentFlow> createState() => _PreTreatmentFlowState();
@@ -25,7 +28,7 @@ class PreTreatmentFlow extends StatefulWidget {
 class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
   static const int _totalSteps = 12;
 
-  int _currentStep = 0; // 0-indexed (0~11)
+  late int _currentStep = widget.initialStep; // 0-indexed (0~11)
 
   // Step 1
   PatientGroup? _selectedGroup;
@@ -189,12 +192,22 @@ class _PreTreatmentFlowState extends State<PreTreatmentFlow> {
   void _goNext() {
     if (_currentStep < _totalSteps - 1) {
       setState(() {
+        // Step 10 → 11 전환 시 검증 속도를 치료 속도 초기값으로 반영
+        if (_currentStep == 9) {
+          _treatmentSpeed = _verifySpeed;
+        }
         _currentStep++;
         _showTooltip = false;
         _isPaused = false;
       });
     } else {
-      // 치료 시작
+      // 치료 시작 — 설정값을 Provider에 저장
+      final params = context.read<TreatmentParamsProvider>();
+      params.setSpeed(_treatmentSpeed);
+      params.setMinutes(_treatmentMinutes);
+      if (_selectedBodyPart != null) {
+        params.setBodyPart(_selectedBodyPart!);
+      }
       context.go('/treatment');
     }
   }

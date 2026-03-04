@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../../providers/treatment_params_provider.dart';
 import '../../theme/colors.dart';
 import '../../theme/dimensions.dart';
 import '../../theme/text_styles.dart';
@@ -17,12 +19,24 @@ class TreatmentDashboard extends StatefulWidget {
 }
 
 class _TreatmentDashboardState extends State<TreatmentDashboard> {
-  int _speed = 5;
-  int _remainingSeconds = 28 * 60 + 39; // 28:39 demo
-  final double _loadValue = 0.60; // 부하도 60%
+  late int _speed;
+  late int _remainingSeconds;
+  bool _initialized = false;
+  final double _loadValue = 0.6;
   final double _trajectoryProgress = 0.45; // 궤적 내 위치
   bool _hasAddedTrajectory = false;
   double _seg1Ratio = 0.5; // 1번 궤적이 전체에서 차지하는 비율 (동적, 데모 0.5)
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      final params = context.read<TreatmentParamsProvider>();
+      _speed = params.speed;
+      _remainingSeconds = params.minutes * 60;
+      _initialized = true;
+    }
+  }
 
   // ════════════════════════════════════════════
   // Build
@@ -136,9 +150,8 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
           ),
         ),
         const SizedBox(width: 16),
-        // 부하도
+        // 현재 부하도
         Expanded(
-          flex: 2,
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -149,12 +162,14 @@ class _TreatmentDashboardState extends State<TreatmentDashboard> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(height: 8),
-                Text('부하도',
+                Text('현재 부하도',
                     style: AppTextStyles.titleLarge
                         .copyWith(color: AppColors.textBlack)),
-                Transform.translate(
-                  offset: const Offset(0, -20),
-                  child: GaugeMeter(value: _loadValue, size: 240),
+                const SizedBox(height: 12),
+                GaugeMeter(
+                  value: _loadValue,
+                  size: 160,
+                  hideValue: true,
                 ),
               ],
             ),

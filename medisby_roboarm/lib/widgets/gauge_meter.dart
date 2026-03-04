@@ -13,6 +13,7 @@ class GaugeMeter extends StatelessWidget {
   final double size;
   final String? label;
   final String? unit;
+  final bool hideValue;
 
   const GaugeMeter({
     super.key,
@@ -20,6 +21,7 @@ class GaugeMeter extends StatelessWidget {
     this.size = 200,
     this.label,
     this.unit,
+    this.hideValue = false,
   });
 
   @override
@@ -34,14 +36,15 @@ class GaugeMeter extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                '${(value * 100).toInt()}',
-                style: AppTextStyles.headingLarge.copyWith(
-                  color: AppColors.textBlack,
-                  fontSize: 32,
+              if (!hideValue)
+                Text(
+                  '${(value * 100).toInt()}',
+                  style: AppTextStyles.headingLarge.copyWith(
+                    color: AppColors.textBlack,
+                    fontSize: 32,
+                  ),
                 ),
-              ),
-              if (unit != null)
+              if (unit != null && !hideValue)
                 Text(
                   unit!,
                   style: AppTextStyles.caption.copyWith(

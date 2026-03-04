@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'providers/device_provider.dart';
+import 'providers/treatment_params_provider.dart';
 import 'router.dart';
 import 'theme/colors.dart';
 
@@ -23,6 +24,7 @@ class MedisbyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => DeviceProvider()),
+        ChangeNotifierProvider(create: (_) => TreatmentParamsProvider()),
       ],
       child: MaterialApp.router(
         title: 'Medisby ROBOARM',
